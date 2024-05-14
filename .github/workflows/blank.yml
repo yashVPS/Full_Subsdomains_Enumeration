@@ -23,7 +23,7 @@ jobs:
       - name: Run Subfinder
         run: |
              ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d ford.com,lincoln.com,omnicraftautoparts.com,motorcraft.com,quicklane.com | tee ford_subs.txt
-             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -dL -all ford_subs.txt | tee ford_subdomains_of_sub.txt
+             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all  -dL ford_subs.txt | tee ford_subdomains_of_sub.txt
              wc ford_subs.txt -l
              wc ford_subdomains_of_sub.txt -l
              cat ford_subdomains_of_sub.txt >> ford_subs.txt
@@ -39,7 +39,6 @@ jobs:
             git push   
       - name: dynamic subdomain enumeration with alterx
         run: |
-          rm *.md
           wget https://github.com/projectdiscovery/dnsx/releases/download/v1.2.1/dnsx_1.2.1_linux_amd64.zip
           unzip dnsx_1.2.1_linux_amd64.zip
           sudo chmod +x * 
