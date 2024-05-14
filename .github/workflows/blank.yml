@@ -23,18 +23,12 @@ jobs:
       - name: Run Subfinder
         run: |
              ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d ford.com,lincoln.com,omnicraftautoparts.com,motorcraft.com,quicklane.com | tee ford_subs.txt
-             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all  -dL ford_subs.txt | tee ford_subdomains_of_sub.txt
              wc ford_subs.txt -l
-             wc ford_subdomains_of_sub.txt -l
-             cat ford_subdomains_of_sub.txt >> ford_subs.txt
-             wc ford_subs.txt -l
-             sort -u ford_subs.txt -o ford_final_subs1.txt
-             wc ford_final_subs1.txt -l
       - name: subdomain save subfinder
         run: |
            git config --global user.email "21btrcc007@jainuniversity.ac.in"
             git config --global user.name "aseemyashuniversity"
-            git add ford_final_subs1.txt
+            git add ford_subs.txt
             git commit -m "Updated subdomains"
             git push   
       - name: dynamic subdomain enumeration with alterx
@@ -42,7 +36,7 @@ jobs:
           wget https://github.com/projectdiscovery/dnsx/releases/download/v1.2.1/dnsx_1.2.1_linux_amd64.zip
           unzip dnsx_1.2.1_linux_amd64.zip
           sudo chmod +x * 
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL final_subs1.txt | ./alterx | ./dnsx | tee final_subs_alter.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL ford_subs.txt | ./alterx | ./dnsx | tee final_subs_alter.txt
           sort -u final_subs_alter.txt -o ford_final_subs2.txt
           wc ford_final_subs2.txt -l
       - name: Commit subdomains file
