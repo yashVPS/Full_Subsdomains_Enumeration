@@ -22,13 +22,13 @@ jobs:
         run: sudo chmod +x *
       - name: Run Subfinder
         run: |
-             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d ford.com,lincoln.com,omnicraftautoparts.com,motorcraft.com,quicklane.com | tee ford_subs.txt
-             wc ford_subs.txt -l
+             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d octopusenergy.com,oeus-kraken.energy,api.oeus-kraken.energy,affiliates.octopus.energy,developer.octopus.energy,ink.octopus.energy,navigator.octopus.energy,webhooks.octopus.energy,octopusenergy.it,octopusenergy.jp,octopusenergy.nz,kraken.octopus.energy,www.octopus.energy,api.oenz-kraken.energy,octopus.energy,octopusenergy.fr,octopusenergy.de,api.octopus.energy,octopusenergy.es | tee octopusenergy_subs.txt
+             wc octopusenergy_subs.txt -l
       - name: subdomain save subfinder
         run: |
            git config --global user.email "21btrcc007@jainuniversity.ac.in"
             git config --global user.name "aseemyashuniversity"
-            git add ford_subs.txt
+            git add octopusenergy_subs.txt
             git commit -m "Updated subdomains"
             git push   
       - name: dynamic subdomain enumeration with alterx
@@ -36,13 +36,13 @@ jobs:
           wget https://github.com/projectdiscovery/dnsx/releases/download/v1.2.1/dnsx_1.2.1_linux_amd64.zip
           unzip dnsx_1.2.1_linux_amd64.zip
           sudo chmod +x * 
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL ford_subs.txt | ./alterx | ./dnsx | tee final_subs_alter.txt
-          sort -u final_subs_alter.txt -o ford_final_subs2.txt
-          wc ford_final_subs2.txt -l
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL octopusenergy_subs.txt | ./alterx | ./dnsx | tee final_octopusenergy_subs.txt
+          sort -u final_octopusenergy_subs.txt -o final_octopusenergy_subs2.txt
+          wc final_octopusenergy_subs2.txt -l
       - name: Commit subdomains file
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "aseemyashuniversity"
-          git add ford_final_subs2.txt
+          git add final_octopusenergy_subs2.txt
           git commit -m "Updated subdomains"
           git push
