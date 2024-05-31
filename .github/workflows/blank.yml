@@ -22,27 +22,13 @@ jobs:
         run: sudo chmod +x *
       - name: Run Subfinder
         run: |
-             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d sandbox.hexsafe.hextrust.com | tee hextrust.com_subs2.txt
-             wc hextrust.com_subs2.txt -l
+             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d sandbox.hexsafe.hextrust.com | tee hextrust.com_subssandbox.txt
+             wc hextrust.com_subssandbox.txt -l
       - name: subdomain save subfinder
         run: |
            git config --global user.email "21btrcc007@jainuniversity.ac.in"
             git config --global user.name "aseemyashuniversity"
-            git add hextrust.com_subs2.txt
+            git add hextrust.com_subssandbox.txt
             git commit -m "Updated subdomains"
             git push   
-      - name: dynamic subdomain enumeration with alterx
-        run: |
-          wget https://github.com/projectdiscovery/dnsx/releases/download/v1.2.1/dnsx_1.2.1_linux_amd64.zip
-          unzip dnsx_1.2.1_linux_amd64.zip
-          sudo chmod +x * 
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL hextrust.com_subs2.txt | ./alterx | ./dnsx | tee final_hextrust.com_subs2.txt
-          sort -u final_hextrust.com_subs2.txt -o final_hextrust.com_subs3.txt
-          wc final_hextrust.com_subs3.txt -l
-      - name: Commit subdomains file
-        run: |
-          git config --global user.email "21btrcc007@jainuniversity.ac.in"
-          git config --global user.name "aseemyashuniversity"
-          git add final_hextrust.com_subs3.txt
-          git commit -m "Updated subdomains"
-          git push
+     
