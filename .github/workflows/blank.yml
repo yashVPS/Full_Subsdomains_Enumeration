@@ -22,13 +22,13 @@ jobs:
         run: sudo chmod +x *
       - name: Run Subfinder
         run: |
-             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d sandbox.hexsafe.hextrust.com | tee hextrust.com_subssandbox.txt
-             wc hextrust.com_subssandbox.txt -l
+             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d reuters.com,thomsonreuters.com | tee thomsonreuters_subs.txt
+             wc thomsonreuters_subs.txt -l
       - name: subdomain save subfinder
         run: |
            git config --global user.email "21btrcc007@jainuniversity.ac.in"
             git config --global user.name "aseemyashuniversity"
-            git add hextrust.com_subssandbox.txt
+            git add thomsonreuters_subs.txt
             git commit -m "Updated subdomains"
             git push   
      
