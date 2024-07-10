@@ -26,7 +26,7 @@ jobs:
              wc principal_subs.txt -l
              python3 ./crtsh.py -d principal.com -r -w | tee -a crtsh_domains2.txt
              wc crtsh_domains2.txt -l
-             ort -u principal_subs.txt crtsh_domains2.txt > principal_final.txt
+             sort -u principal_subs.txt crtsh_domains2.txt > principal_final.txt
              wc principal_final.txt -l
       
       - name: subdomain save final
