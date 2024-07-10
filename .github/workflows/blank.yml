@@ -57,6 +57,11 @@ jobs:
       
       - name: DNS BRUTE
         run: |
+            git clone https://github.com/blechschmidt/massdns.git
+            cd massdns
+            make
+            sudo make install
+            which massdns
             wget https://wordlists-cdn.assetnote.io/data/manual/2m-subdomains.txt
             wget https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt
             wget https://gist.githubusercontent.com/jhaddix/f64c97d0863a78454e44c2f7119c2a6a/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt
@@ -66,8 +71,7 @@ jobs:
             wget https://raw.githubusercontent.com/blechschmidt/massdns/master/lists/resolvers.txt
             sort resolvers-trusted.txt resolvers.txt > final_resolvers.txt
             chmod +x *
-            ./puredns -h
-            ./puredns bruteforce SUBBRUTE_all_in_one.txt -d thomsonreuters_final.txt | tee -a finaldnsbrute.txt
+            ./puredns bruteforce SUBBRUTE_all_in_one.txt -d thomsonreuters_final.txt —r final_resolvers.txt  — trusted-only — rate-limit-trusted 100 | tee -a finaldnsbrute.txt
 
       - name: subdomdnsbrute save
         run: |
