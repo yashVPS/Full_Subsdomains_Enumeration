@@ -12,48 +12,46 @@ jobs:
         run: |
           git config --global user.email "aseemyash98@gmail.com"
           git config --global user.name "aseemyash"
-      #- name: Download Subfinder
-        #run: |
-          #mkdir -p /home/runner/configz/subfinder
-          #cp provider-config.yaml /home/runner/configz/subfinder
-          #wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
-          #unzip subfinder_2.6.6_linux_amd64.zip
-      #- name: Make Subfinder executable
-        #run: sudo chmod +x *
-      #- name: Run Subfinder and crtsh
-        #run: |
-             #./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d reuters.com,thomsonreuters.com | tee thomsonreuters_subs.txt
-             #wc thomsonreuters_subs.txt -l
-             #python3 ./crtsh.py -d reuters.com -r -w | tee -a crtsh_domains1.txt
-             #python3 ./crtsh.py -d thomsonreuters.com -r -w | tee -a crtsh_domains2.txt
-             #wc crtsh_domains1.txt -l
-             #wc crtsh_domains2.txt -l
-             #ort -u thomsonreuters_subs.txt crtsh_domains1.txt crtsh_domains2.txt > thomsonreuters_final.txt
-             #wc thomsonreuters_final.txt -l
+      - name: Download Subfinder
+        run: |
+          mkdir -p /home/runner/configz/subfinder
+          cp provider-config.yaml /home/runner/configz/subfinder
+          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
+          unzip subfinder_2.6.6_linux_amd64.zip
+      - name: Make Subfinder executable
+        run: sudo chmod +x *
+      - name: Run Subfinder and crtsh
+        run: |
+             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d principal.com | tee principal_subs.txt
+             wc principal_subs.txt -l
+             python3 ./crtsh.py -d principal.com -r -w | tee -a crtsh_domains2.txt
+             wc crtsh_domains2.txt -l
+             ort -u principal_subs.txt crtsh_domains2.txt > principal_final.txt
+             wc principal_final.txt -l
       
-      #- name: subdomain save final
-        #run: |
-            #git config --global user.email "aseemyash98@gmail.com"
-            #git config --global user.name "aseemyash"
-            #git add thomsonreuters_final.txt
-            #git commit -m "Updated subdomains"
-            #git push   
+      - name: subdomain save final
+        run: |
+            git config --global user.email "aseemyash98@gmail.com"
+            git config --global user.name "aseemyash"
+            git add principal_final.txt
+            git commit -m "Updated subdomains"
+            git push   
 
-      #- name: subdomain save subfinder
-        #run: |
+      - name: subdomain save subfinder
+        run: |
             
-            #chmod +x *
-            #./csprecon -l thomsonreuters_final.txt | tee -a subs_extracted_by_csprecon.txt
-            #wc subs_extracted_by_csprecon.txt -l
-            #sort -u thomsonreuters_final.txt subs_extracted_by_csprecon.txt > full_final_thomsonreuterssubs.txt
+            chmod +x *
+            ./csprecon -l principal_final.txt | tee -a subs_extracted_by_csprecon.txt
+            wc subs_extracted_by_csprecon.txt -l
+            sort -u principal_final.txt subs_extracted_by_csprecon.txt > full_final_principalsubs.txt
 
-      #- name: subdomain save csprecon
-        #run: |
-           #git config --global user.email "aseemyash98@gmail.com"
-            #git config --global user.name "aseemyash"
-            #git add subs_extracted_by_csprecon.txt full_final_thomsonreuterssubs.txt
-            #git commit -m "csp and final subdomains"
-            #git push
+      - name: subdomain save csprecon
+        run: |
+           git config --global user.email "aseemyash98@gmail.com"
+            git config --global user.name "aseemyash"
+            git add subs_extracted_by_csprecon.txt full_final_principalsubs.txt
+            git commit -m "csp and final subdomains"
+            git push
       
       - name: DNS BRUTE
         run: |
@@ -72,12 +70,12 @@ jobs:
             wget https://raw.githubusercontent.com/blechschmidt/massdns/master/lists/resolvers.txt
             sort resolvers-trusted.txt resolvers.txt > final_resolvers.txt
             chmod +x *
-            ./puredns bruteforce SUBBRUTE_all_in_one.txt -d thomsonreuters_final.txt —r final_resolvers.txt | tee -a finaldnsbrute.txt
+            ./puredns bruteforce SUBBRUTE_all_in_one.txt -d principal_final.txt —r final_resolvers.txt | tee -a finaldnsbrute_principal.txt
 
       - name: subdomdnsbrute save
         run: |
            git config --global user.email "aseemyash98@gmail.com"
            git config --global user.name "aseemyash"
-           git add finaldnsbrute.txt
+           git add finaldnsbrute_principal.txt
            git commit -m "dnsbrute subdomains"
            git push
