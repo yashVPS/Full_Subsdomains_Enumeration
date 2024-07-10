@@ -22,18 +22,18 @@ jobs:
         run: sudo chmod +x *
       - name: Run Subfinder and crtsh
         run: |
-             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d principal.com | tee principal_subs.txt
-             wc principal_subs.txt -l
-             python3 ./crtsh.py -d principal.com -r -w | tee -a crtsh_domains2.txt
+             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d ford.com | tee ford_subs.txt
+             wc ford_subs.txt -l
+             python3 ./crtsh.py -d ford.com -r -w | tee -a crtsh_domains2.txt
              wc crtsh_domains2.txt -l
-             sort -u principal_subs.txt crtsh_domains2.txt > principal_final.txt
-             wc principal_final.txt -l
+             sort -u ford_subs.txt crtsh_domains2.txt > ford_final.txt
+             wc ford_final.txt -l
       
       - name: subdomain save final
         run: |
             git config --global user.email "aseemyash98@gmail.com"
             git config --global user.name "aseemyash"
-            git add principal_final.txt
+            git add ford_final.txt
             git commit -m "Updated subdomains"
             git push   
 
@@ -41,15 +41,15 @@ jobs:
         run: |
             
             chmod +x *
-            ./csprecon -l principal_final.txt | tee -a subs_extracted_by_csprecon.txt
+            ./csprecon -l ford_final.txt | tee -a subs_extracted_by_csprecon.txt
             wc subs_extracted_by_csprecon.txt -l
-            sort -u principal_final.txt subs_extracted_by_csprecon.txt > full_final_principalsubs.txt
+            sort -u ford_final.txt subs_extracted_by_csprecon.txt > full_final_fordsubs.txt
 
       - name: subdomain save csprecon
         run: |
            git config --global user.email "aseemyash98@gmail.com"
             git config --global user.name "aseemyash"
-            git add subs_extracted_by_csprecon.txt full_final_principalsubs.txt
+            git add subs_extracted_by_csprecon.txt full_final_fordsubs.txt
             git commit -m "csp and final subdomains"
             git push
       
@@ -70,12 +70,12 @@ jobs:
             wget https://raw.githubusercontent.com/blechschmidt/massdns/master/lists/resolvers.txt
             sort resolvers-trusted.txt resolvers.txt > final_resolvers.txt
             chmod +x *
-            ./puredns bruteforce SUBBRUTE_all_in_one.txt -d principal_final.txt —r final_resolvers.txt | tee -a finaldnsbrute_principal.txt
+            ./puredns bruteforce SUBBRUTE_all_in_one.txt -d ford_final.txt —r final_resolvers.txt | tee -a finaldnsbrute_ford.txt
 
       - name: subdomdnsbrute save
         run: |
            git config --global user.email "aseemyash98@gmail.com"
            git config --global user.name "aseemyash"
-           git add finaldnsbrute_principal.txt
+           git add finaldnsbrute_ford.txt
            git commit -m "dnsbrute subdomains"
            git push
