@@ -1,0 +1,5 @@
+Unable to execute massdns. Make sure it is present and that the
+path to the binary is added to the PATH environment variable.
+
+Alternatively, specify the path to massdns using --bin
+
