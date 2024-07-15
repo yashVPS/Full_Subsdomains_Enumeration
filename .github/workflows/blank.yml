@@ -20,20 +20,36 @@ jobs:
           unzip subfinder_2.6.6_linux_amd64.zip
       - name: Make Subfinder executable
         run: sudo chmod +x *
-      - name: Run Subfinder and crtsh
+      - name: Run Subfinder and crtsh and other sources
         run: |
-             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d amazon.com | tee amazon_subs.txt
-             wc amazon_subs.txt -l
-             python3 ./crtsh.py -d amazon.com -r -w | tee -a crtsh_domains2.txt
+             ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d reuters.com | tee reuters_subs.txt
+             wc reuters_subs.txt -l
+             python3 ./crtsh.py -d reuters.com -r -w | tee -a crtsh_domains2.txt
              wc crtsh_domains2.txt -l
-             sort -u amazon_subs.txt crtsh_domains2.txt > amazon_final.txt
-             wc amazon_final.txt -l
+             sort -u reuters_subs.txt crtsh_domains2.txt > reuters_final1.txt
+             wc reuters_final1.txt -l
+            
+             curl -s "https://jldc.me/anubis/subdomains/att.com" | tr -d '[]"' | tr ',' '\n' | tee -a jldc.txt
+
+             curl -s "https://api.subdomain.center/?domain=att.com" | tr -d '[]"' | tr ',' '\n' | tee -a subcenter.txt
+
+             curl -s "https://api.hackertarget.com/hostsearch/?q=att.com" | cut -d',' -f1 | tee -a hackertarget.txt
+
+             curl -s "https://otx.alienvault.com/api/v1/indicators/domain/att.com/url_list?limit=10000&page=1" | jq -r '.url_list[].hostname' | tee -a alienvault.txt
+
+             sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains.txt
+
+             wc -l new_domains.txt
+
+             sort -u reuters_final1.txt new_domains.txt > reuters_final.txt
+            
+
       
       - name: subdomain save final
         run: |
             git config --global user.email "aseemyash98@gmail.com"
             git config --global user.name "aseemyash"
-            git add amazon_final.txt
+            git add reuters_final.txt
             git commit -m "Updated subdomains"
             git push   
 
@@ -41,15 +57,15 @@ jobs:
         #run: |
             
             #chmod +x *
-            #./csprecon -l amazon_final.txt | tee -a subs_extracted_by_csprecon.txt
+            #./csprecon -l reuters_final.txt | tee -a subs_extracted_by_csprecon.txt
             #wc subs_extracted_by_csprecon.txt -l
-            #sort -u amazon_final.txt subs_extracted_by_csprecon.txt > full_final_amazonsubs.txt
+            #sort -u reuters_final.txt subs_extracted_by_csprecon.txt > full_final_reuterssubs.txt
 
       #- name: subdomain save csprecon
         #run: |
            #git config --global user.email "aseemyash98@gmail.com"
             #git config --global user.name "aseemyash"
-            #git add subs_extracted_by_csprecon.txt full_final_amazonsubs.txt
+            #git add subs_extracted_by_csprecon.txt full_final_reuterssubs.txt
             #git commit -m "csp and final subdomains"
             #git push
       
@@ -70,12 +86,12 @@ jobs:
             wget https://raw.githubusercontent.com/blechschmidt/massdns/master/lists/resolvers.txt
             sort resolvers-trusted.txt resolvers.txt > final_resolvers.txt
             chmod +x *
-            ./puredns bruteforce SUBBRUTE_all_in_one.txt -d amazon_final.txt —r final_resolvers.txt | tee -a finaldnsbrute_amazon.txt
+            ./puredns bruteforce SUBBRUTE_all_in_one.txt -d reuters_final.txt —r final_resolvers.txt | tee -a finaldnsbrute_reuters.txt
 
       - name: subdomdnsbrute save
         run: |
            git config --global user.email "aseemyash98@gmail.com"
            git config --global user.name "aseemyash"
-           git add finaldnsbrute_amazon.txt
+           git add finaldnsbrute_reuters.txt
            git commit -m "dnsbrute subdomains"
            git push
