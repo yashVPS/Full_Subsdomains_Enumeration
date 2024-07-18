@@ -26,46 +26,46 @@ jobs:
 
       - name: Run Subfinder and other sources
         run: |
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d reuters.com | tee reuters_subs.txt
-          wc -l reuters_subs.txt
-          python3 ./crtsh.py -d reuters.com -r -w | tee -a crtsh_domains2.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -d paze.com | tee paze_subs.txt
+          wc -l paze_subs.txt
+          python3 ./crtsh.py -d paze.com -r -w | tee -a crtsh_domains2.txt
           wc -l crtsh_domains2.txt
-          sort -u reuters_subs.txt crtsh_domains2.txt > reuters_final1.txt
-          wc -l reuters_final1.txt
-          curl -s "https://jldc.me/anubis/subdomains/reuters.com" | tr -d '[]"' | tr ',' '\n' | tee -a jldc.txt
-          curl -s "https://api.subdomain.center/?domain=reuters.com" | tr -d '[]"' | tr ',' '\n' | tee -a subcenter.txt
-          curl -s "https://api.hackertarget.com/hostsearch/?q=reuters.com" | cut -d',' -f1 | tee -a hackertarget.txt
-          curl -s "https://otx.alienvault.com/api/v1/indicators/domain/reuters.com/url_list?limit=10000&page=1" | jq -r '.url_list[].hostname' | tee -a alienvault.txt
+          sort -u paze_subs.txt crtsh_domains2.txt > paze_final1.txt
+          wc -l paze_final1.txt
+          curl -s "https://jldc.me/anubis/subdomains/paze.com" | tr -d '[]"' | tr ',' '\n' | tee -a jldc.txt
+          curl -s "https://api.subdomain.center/?domain=paze.com" | tr -d '[]"' | tr ',' '\n' | tee -a subcenter.txt
+          curl -s "https://api.hackertarget.com/hostsearch/?q=paze.com" | cut -d',' -f1 | tee -a hackertarget.txt
+          curl -s "https://otx.alienvault.com/api/v1/indicators/domain/paze.com/url_list?limit=10000&page=1" | jq -r '.url_list[].hostname' | tee -a alienvault.txt
           sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains.txt
           wc -l new_domains.txt
-          sort -u reuters_final1.txt new_domains.txt > reuters_final.txt
+          sort -u paze_final1.txt new_domains.txt > paze_final.txt
 
       - name: view subdomain counts
         run: |
-          wc -l reuters_final1.txt
+          wc -l paze_final1.txt
           wc -l new_domains.txt
-          wc -l reuters_final.txt
+          wc -l paze_final.txt
 
       - name: Save final subdomains
         run: |
           git config --global user.email "aseemyash98@gmail.com"
           git config --global user.name "aseemyash"
-          git add reuters_final.txt
+          git add paze_final.txt
           git commit -m "Updated subdomains"
           git push
 
       # - name: Save Subfinder subdomains
       #   run: |
       #     chmod +x *
-      #     ./csprecon -l reuters_final.txt | tee -a subs_extracted_by_csprecon.txt
+      #     ./csprecon -l paze_final.txt | tee -a subs_extracted_by_csprecon.txt
       #     wc -l subs_extracted_by_csprecon.txt
-      #     sort -u reuters_final.txt subs_extracted_by_csprecon.txt > full_final_reuterssubs.txt
+      #     sort -u paze_final.txt subs_extracted_by_csprecon.txt > full_final_pazesubs.txt
 
       # - name: Save CSP recon subdomains
       #   run: |
       #     git config --global user.email "aseemyash98@gmail.com"
       #     git config --global user.name "aseemyash"
-      #     git add subs_extracted_by_csprecon.txt full_final_reuterssubs.txt
+      #     git add subs_extracted_by_csprecon.txt full_final_pazesubs.txt
       #     git commit -m "csp and final subdomains"
       #     git push
 
@@ -85,12 +85,12 @@ jobs:
           wget https://raw.githubusercontent.com/blechschmidt/massdns/master/lists/resolvers.txt
           sort -u resolvers-trusted.txt resolvers.txt > final_resolvers.txt
           chmod +x *
-          ./puredns bruteforce SUBBRUTE_all_in_one.txt -d reuters_final.txt -r final_resolvers.txt | tee -a finaldnsbrute_reuters.txt
+          ./puredns bruteforce SUBBRUTE_all_in_one.txt -d paze_final.txt -r final_resolvers.txt | tee -a finaldnsbrute_paze.txt
 
       - name: Save DNS brute force results
         run: |
           git config --global user.email "aseemyash98@gmail.com"
           git config --global user.name "aseemyash"
-          git add finaldnsbrute_reuters.txt
+          git add finaldnsbrute_paze.txt
           git commit -m "dnsbrute subdomains"
           git push
