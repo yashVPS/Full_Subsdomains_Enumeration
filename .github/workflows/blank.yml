@@ -39,7 +39,7 @@ jobs:
 
     - name: Run crtsh.py
       run: |
-        xargs -a H1_wildcard_targets.txt -I {} python3 ./crtsh.py -d {} -r -w | tee -a crtsh_domains2.txt
+        xargs -a H1_wildcard_targets.txt -I {} python3 ./crtsh.py -d {} -r -w >> crtsh_domains2.txt
         wc -l crtsh_domains2.txt
         git add crtsh_domains2.txt
         git commit -m 'Add crtsh.py results'
