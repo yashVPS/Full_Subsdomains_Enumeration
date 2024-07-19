@@ -21,6 +21,14 @@ jobs:
         git config --global user.name "aseemyash"
         git config --global user.email "aseemyash98@gmail.com"
 
+    - name: Download Subfinder
+      run: |
+          mkdir -p /home/runner/configz/subfinder
+          cp provider-config.yaml /home/runner/configz/subfinder
+          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
+          unzip subfinder_2.6.6_linux_amd64.zip
+          sudo chmod +x *
+    
     - name: Run subfinder
       run: |
         ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL H1_wildcard_targets.txt -o H1_wildcard_targets_subs.txt
