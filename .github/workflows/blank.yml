@@ -1,79 +1,70 @@
-name: Subdomain Enumeration
+name: Subdomain Recon Workflow
 
-on: 
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  enumerate-subdomains:
+  recon:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+      - name: Install Git and configure user
+        run: |
+          git config --global user.name "aseemyash"
+          git config --global user.email "aseemyash98@gmail.com"
 
-    - name: Install Git and configure user
-      run: |
-        git config --global user.name "aseemyash"
-        git config --global user.email "aseemyash98@gmail.com"
-        sudo pip3 install requests
-
-    - name: Download Subfinder
-      run: |
+      - name: Download Subfinder
+        run: |
           mkdir -p /home/runner/configz/subfinder
           cp provider-config.yaml /home/runner/configz/subfinder
           wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
           unzip subfinder_2.6.6_linux_amd64.zip
           sudo chmod +x *
-    
-    - name: Run subfinder
-      run: |
-        ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL mintel.txt -o mintel_subs.txt
-        wc -l mintel_subs.txt
-        git add mintel_subs.txt
-        git commit -m 'Add subfinder results'
-        git push
 
-    - name: Run crtsh.py
-      run: |
-        xargs -a mintel.txt -I {} python3 ./crtsh.py -d {} -r -w >> crtsh_domains2.txt
-        wc -l mintel_crtsh_domains2.txt
-        git add mintel_crtsh_domains2.txt
-        git commit -m 'Add crtsh.py results'
-        git push
+      - name: Run subfinder
+        run: |
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL mintel.txt -o mintel_subs.txt
+          wc -l mintel_subs.txt
+          git add mintel_subs.txt
+          git commit -m 'Add subfinder results'
+          git push
 
-    - name: Combine subfinder and crtsh results
-      run: |
-        sort -u mintel_subs.txt mintel_crtsh_domains2.txt > mintel_final1.txt
-        wc -l mintel_final1.txt
-        git add mintel_final1.txt
-        git commit -m 'Combine subfinder and crtsh results'
-        git push
+      - name: Run crtsh.py
+        run: |
+          xargs -a mintel.txt -I {} python3 ./crtsh.py -d {} -r -w >> mintel_crtsh_domains2.txt
+          wc -l mintel_crtsh_domains2.txt
+          git add mintel_crtsh_domains2.txt
+          git commit -m 'Add crtsh.py results'
+          git push
 
-    - name: Fetch additional sources
-      run: |
-        xargs -a mintel.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-        xargs -a mintel.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-        xargs -a mintel.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
-        xargs -a mintel.txt -I {} sh -c 'curl -s "https://otx.alienvault.com/api/v1/indicators/domain/{}/url_list?limit=10000&page=1" | jq -r ".url_list[].hostname" >> alienvault.txt'
-        
+      - name: Combine subfinder and crtsh results
+        run: |
+          sort -u mintel_subs.txt mintel_crtsh_domains2.txt > mintel_final1.txt
+          wc -l mintel_final1.txt
+          git add mintel_final1.txt
+          git commit -m 'Combine subfinder and crtsh results'
+          git push
 
-    - name: Combine additional source results
-      run: |
-        sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains_mintel.txt
-        wc -l new_domains_mintel.txt
-        git add new_domains_mintel.txt
-        git commit -m 'Combine additional source results'
-        git push
+      - name: Fetch additional sources
+        run: |
+          xargs -a mintel.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a mintel.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a mintel.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a mintel.txt -I {} sh -c 'curl -s "https://otx.alienvault.com/api/v1/indicators/domain/{}/url_list?limit=10000&page=1" | jq -r ".url_list[].hostname" >> alienvault.txt'
 
-    - name: Combine all results
-      run: |
-        sort -u mintel_final1.txt new_domains_mintel.txt > mintel_final.txt
-        wc -l mintel_final.txt
-        git add mintel_final.txt
-        git commit -m 'Combine all results'
-        git push
+      - name: Combine additional source results
+        run: |
+          sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains_mintel.txt
+          wc -l new_domains_mintel.txt
+          git add new_domains_mintel.txt
+          git commit -m 'Combine additional source results'
+          git push
+
+      - name: Combine all results
+        run: |
+          sort -u mintel_final1.txt new_domains_mintel.txt > mintel_final.txt
+          wc -l mintel_final.txt
+          git add mintel_final.txt
+          git commit -m 'Combine all results'
+          git push
