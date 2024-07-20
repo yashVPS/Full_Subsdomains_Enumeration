@@ -31,50 +31,48 @@ jobs:
     
     - name: Run subfinder
       run: |
-        ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL H1_wildcard_targets.txt -o H1_wildcard_targets_subs.txt
-        wc -l H1_wildcard_targets_subs.txt
-        git add H1_wildcard_targets_subs.txt
+        ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL mintel.txt -o mintel_subs.txt
+        wc -l mintel_subs.txt
+        git add mintel_subs.txt
         git commit -m 'Add subfinder results'
         git push
 
     - name: Run crtsh.py
       run: |
-        xargs -a H1_wildcard_targets.txt -I {} python3 ./crtsh.py -d {} -r -w >> crtsh_domains2.txt
-        wc -l crtsh_domains2.txt
-        git add crtsh_domains2.txt
+        xargs -a mintel.txt -I {} python3 ./crtsh.py -d {} -r -w >> crtsh_domains2.txt
+        wc -l mintel_crtsh_domains2.txt
+        git add mintel_crtsh_domains2.txt
         git commit -m 'Add crtsh.py results'
         git push
 
     - name: Combine subfinder and crtsh results
       run: |
-        sort -u H1_wildcard_targets_subs.txt crtsh_domains2.txt > H1_wildcard_targets_final1.txt
-        wc -l H1_wildcard_targets_final1.txt
-        git add H1_wildcard_targets_final1.txt
+        sort -u mintel_subs.txt mintel_crtsh_domains2.txt > mintel_final1.txt
+        wc -l mintel_final1.txt
+        git add mintel_final1.txt
         git commit -m 'Combine subfinder and crtsh results'
         git push
 
     - name: Fetch additional sources
       run: |
-        xargs -a H1_wildcard_targets.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-        xargs -a H1_wildcard_targets.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-        xargs -a H1_wildcard_targets.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
-        xargs -a H1_wildcard_targets.txt -I {} sh -c 'curl -s "https://otx.alienvault.com/api/v1/indicators/domain/{}/url_list?limit=10000&page=1" | jq -r ".url_list[].hostname" >> alienvault.txt'
-        git add jldc.txt subcenter.txt hackertarget.txt alienvault.txt
-        git commit -m 'Fetch additional sources'
-        git push
+        xargs -a mintel.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+        xargs -a mintel.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+        xargs -a mintel.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+        xargs -a mintel.txt -I {} sh -c 'curl -s "https://otx.alienvault.com/api/v1/indicators/domain/{}/url_list?limit=10000&page=1" | jq -r ".url_list[].hostname" >> alienvault.txt'
+        
 
     - name: Combine additional source results
       run: |
-        sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains_h1targets.txt
-        wc -l new_domains_h1targets.txt
-        git add new_domains_h1targets.txt
+        sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains_mintel.txt
+        wc -l new_domains_mintel.txt
+        git add new_domains_mintel.txt
         git commit -m 'Combine additional source results'
         git push
 
     - name: Combine all results
       run: |
-        sort -u H1_wildcard_targets_final1.txt new_domains_h1targets.txt > H1_wildcard_targets_final.txt
-        wc -l H1_wildcard_targets_final.txt
-        git add H1_wildcard_targets_final.txt
+        sort -u mintel_final1.txt new_domains_mintel.txt > mintel_final.txt
+        wc -l mintel_final.txt
+        git add mintel_final.txt
         git commit -m 'Combine all results'
         git push
