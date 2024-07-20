@@ -20,7 +20,7 @@ jobs:
       run: |
         git config --global user.name "aseemyash"
         git config --global user.email "aseemyash98@gmail.com"
-        sudo pip3 install requests -y
+        sudo pip3 install requests
 
     - name: Download Subfinder
       run: |
