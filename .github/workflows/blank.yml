@@ -24,47 +24,49 @@ jobs:
 
       - name: Run subfinder
         run: |
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL ABB_Private.txt -o ABB_Private_subs.txt
-          wc -l ABB_Private_subs.txt
-          git add ABB_Private_subs.txt
+          echo "dlocalgo.com" > dlocalgo.txt
+          echo "dlocal.com" >> dlocalgo.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL dlocalgo.txt -o dlocalgo_subs.txt
+          wc -l dlocalgo_subs.txt
+          git add dlocalgo_subs.txt
           git commit -m 'Add subfinder results'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a ABB_Private.txt -I {} python3 ./crtsh.py -d {} -r -w >> ABB_Private_crtsh_domains2.txt
-          wc -l ABB_Private_crtsh_domains2.txt
-          git add ABB_Private_crtsh_domains2.txt
+          xargs -a dlocalgo.txt -I {} python3 ./crtsh.py -d {} -r -w >> dlocalgo_crtsh_domains2.txt
+          wc -l dlocalgo_crtsh_domains2.txt
+          git add dlocalgo_crtsh_domains2.txt
           git commit -m 'Add crtsh.py results'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u ABB_Private_subs.txt ABB_Private_crtsh_domains2.txt > ABB_Private_final1.txt
-          wc -l ABB_Private_final1.txt
-          git add ABB_Private_final1.txt
+          sort -u dlocalgo_subs.txt dlocalgo_crtsh_domains2.txt > dlocalgo_final1.txt
+          wc -l dlocalgo_final1.txt
+          git add dlocalgo_final1.txt
           git commit -m 'Combine subfinder and crtsh results'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a ABB_Private.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a ABB_Private.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a ABB_Private.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
-          xargs -a ABB_Private.txt -I {} sh -c 'curl -s "https://otx.alienvault.com/api/v1/indicators/domain/{}/url_list?limit=10000&page=1" | jq -r ".url_list[].hostname" >> alienvault.txt'
+          xargs -a dlocalgo.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a dlocalgo.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a dlocalgo.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a dlocalgo.txt -I {} sh -c 'curl -s "https://otx.alienvault.com/api/v1/indicators/domain/{}/url_list?limit=10000&page=1" | jq -r ".url_list[].hostname" >> alienvault.txt'
 
       - name: Combine additional source results
         run: |
-          sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains_ABB_Private.txt
-          wc -l new_domains_ABB_Private.txt
-          git add new_domains_ABB_Private.txt
+          sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains_dlocalgo.txt
+          wc -l new_domains_dlocalgo.txt
+          git add new_domains_dlocalgo.txt
           git commit -m 'Combine additional source results'
           git push
 
       - name: Combine all results
         run: |
-          sort -u ABB_Private_final1.txt new_domains_ABB_Private.txt > ABB_Private_final.txt
-          wc -l ABB_Private_final.txt
-          git add ABB_Private_final.txt
+          sort -u dlocalgo_final1.txt new_domains_dlocalgo.txt > dlocalgo_final.txt
+          wc -l dlocalgo_final.txt
+          git add dlocalgo_final.txt
           git commit -m 'Combine all results'
           git push
