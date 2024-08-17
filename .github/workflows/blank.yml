@@ -49,6 +49,7 @@ jobs:
 
       - name: Fetch additional sources
         run: |
+          echo "g4s.com" > g4s.txt
           # xargs -a g4s.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
           xargs -a g4s.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
           xargs -a g4s.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
@@ -56,7 +57,7 @@ jobs:
 
       - name: Combine additional source results
         run: |
-          sort -u jldc.txt subcenter.txt hackertarget.txt alienvault.txt > new_domains_g4s.txt
+          sort -u subcenter.txt hackertarget.txt alienvault.txt > new_domains_g4s.txt
           wc -l new_domains_g4s.txt
           git add new_domains_g4s.txt
           git commit -m 'Combine additional source results'
