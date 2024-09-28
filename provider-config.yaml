@@ -5,7 +5,8 @@ binaryedge:
 bufferover: []
 c99: []
 censys:
-    - eb4df742-609e-4f9f-b0a7-69f1a6ce7d5a
+  - 6dbd1c3a-3730-405a-a1e0-389655c7ab7f:BvfiA1FyCUuvnLZz7cCDJ4RgFye3f5cq
+  - ed1aabef-c5ea-47b5-ae44-427f039d32aa:EI7uVKeJ9ZO0VsQgleAhbRvGCcqUomFf
 certspotter:
     - k46405_O6xsX05SRdUNLtaVLvPp
 chaos: 
@@ -31,7 +32,18 @@ robtex:
 securitytrails:
     - dy8WbFot2iKquouzvoMDHB4EmRx98Uk5
 shodan:
-    - uDjIykajpEpuAEB5U5MK1g5pjAYYRoys
+  - uDjIykajpEpuAEB5U5MK1g5pjAYYRoys
+  - BWU8goC8c3Fe53FSioZXiNwPcxs2AoBs
+  - XfNgPqoCfrCYQm4yN4hc4hHiii2b4CFY
+  - 4OfYCkU1nZ45lyGNVVP1wFIAl68I8FHU
+  - Y1A80a6hYBjLsWGrsnEIIgizrJHnDAMf
+  - IiySxeXByC88XoQKtkgQXdlVn331smIo
+  - JKowuBn4CG3Q3fCO7e6OMmxQ5stg8bQv
+  - aJav5OtdWBx2G9s0SqjIMq0nziyLvdnO
+  - AIm8QSzwDqBwzp8z7q6BiDpOme7SDFvQ
+  - wBJWqOtFY4hnm2obaREhQmxbqy0xRMT4
+  - nZMRMlPz5WeNugGk3qdx6fOUWgM3wmd3
+  - QpCZRCXP1Qz2TXyXAnAtnDA1yYt2QXrd
 threatbook: 
     - 1bbbc9b4d0464214bb0117ba9a73b55703b81716867543629eefdf3ae8ace87f
 virustotal:
@@ -39,10 +51,10 @@ virustotal:
 whoisxmlapi: 
     - at_WMFpOgPR2KT0462WFkTb1zV0RrKk3
 zoomeye: 
-    - 55c1c730-FC31-32271-77Ce-41Da6baede6
+  - 6AE4BA9A-FBF1-1a9Bf-744e-1bd438c63d0
 zoomeyeapi: 
-    - 696B9B89-9D89-2Ef8f-6515-6a09e8a2ad2
+  - 6AE4BA9A-FBF1-1a9Bf-744e-1bd438c63d0
 leakix: 
     - aIgtCw3q27AuKt6e4IDIp1Mlc_MEkf03sJI5XYmvixUNypoQ
 netlas: 
-    - wME6XdwC28AH0IGgZTaBy0JTJPzS8xgp
+    - pyAEdwiDqBQ4Z3yUQVHKI7xX3PRTtvlQ
