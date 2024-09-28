@@ -9,10 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Install Git and configure user
-      #   run: |
-      #     git config --global user.name "aseemyash"
-      #     git config --global user.email "aseemyash98@gmail.com"
+      - name: Install Git and configure user
+        run: |
+          git config --global user.name "aseemyash"
+          git config --global user.email "aseemyash98@gmail.com"
 
       # - name: Download Subfinder
       #   run: |
