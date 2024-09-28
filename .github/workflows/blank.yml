@@ -9,95 +9,95 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Git and configure user
-        run: |
-          git config --global user.name "aseemyash"
-          git config --global user.email "aseemyash98@gmail.com"
+      # - name: Install Git and configure user
+      #   run: |
+      #     git config --global user.name "aseemyash"
+      #     git config --global user.email "aseemyash98@gmail.com"
 
-      - name: Download Subfinder
-        run: |
-          mkdir -p /home/runner/configz/subfinder
-          cp provider-config.yaml /home/runner/configz/subfinder
-          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
-          unzip subfinder_2.6.6_linux_amd64.zip
-          sudo chmod +x *
+      # - name: Download Subfinder
+      #   run: |
+      #     mkdir -p /home/runner/configz/subfinder
+      #     cp provider-config.yaml /home/runner/configz/subfinder
+      #     wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
+      #     unzip subfinder_2.6.6_linux_amd64.zip
+      #     sudo chmod +x *
 
-      - name: Run subfinder
-        run: |
-          echo "cognizant.com" > cognizant.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL cognizant.txt -o cognizant_subs.txt
-          wc -l cognizant_subs.txt
-          git add cognizant_subs.txt
-          git commit -m 'Add subfinder results'
-          git push
+      # - name: Run subfinder
+      #   run: |
+      #     echo "cognizant.com" > cognizant.txt
+      #     ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL cognizant.txt -o cognizant_subs.txt
+      #     wc -l cognizant_subs.txt
+      #     git add cognizant_subs.txt
+      #     git commit -m 'Add subfinder results'
+      #     git push
 
-      - name: Run crtsh.py
-        run: |
-          xargs -a cognizant.txt -I {} python3 ./crtsh.py -d {} -r -w >> cognizant_crtsh_domains2.txt
-          wc -l cognizant_crtsh_domains2.txt
-          git add cognizant_crtsh_domains2.txt
-          git commit -m 'Add crtsh.py results'
-          git push
+      # - name: Run crtsh.py
+      #   run: |
+      #     xargs -a cognizant.txt -I {} python3 ./crtsh.py -d {} -r -w >> cognizant_crtsh_domains2.txt
+      #     wc -l cognizant_crtsh_domains2.txt
+      #     git add cognizant_crtsh_domains2.txt
+      #     git commit -m 'Add crtsh.py results'
+      #     git push
 
-      - name: Combine subfinder and crtsh results
-        run: |
-          sort -u cognizant_subs.txt cognizant_crtsh_domains2.txt > cognizant_final1.txt
-          wc -l cognizant_final1.txt
-          git add cognizant_final1.txt
-          git commit -m 'Combine subfinder and crtsh results'
-          git push
+      # - name: Combine subfinder and crtsh results
+      #   run: |
+      #     sort -u cognizant_subs.txt cognizant_crtsh_domains2.txt > cognizant_final1.txt
+      #     wc -l cognizant_final1.txt
+      #     git add cognizant_final1.txt
+      #     git commit -m 'Combine subfinder and crtsh results'
+      #     git push
 
-      - name: Fetch additional sources
-        run: |
-          echo "cognizant.com" > cognizant.txt
-          xargs -a cognizant.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a cognizant.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a cognizant.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
-          sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh cognizant.com cognizant_alientvault.txt
+      # - name: Fetch additional sources
+      #   run: |
+      #     echo "cognizant.com" > cognizant.txt
+      #     xargs -a cognizant.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+      #     xargs -a cognizant.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+      #     xargs -a cognizant.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+      #     sudo chmod +x *
+      #     ./alienvault_hostnamefetcher.sh cognizant.com cognizant_alientvault.txt
 
 
-      - name: Combine additional source results
-        run: |
-          sort -u subcenter.txt hackertarget.txt cognizant_alientvault.txt > new_domains_cognizant.txt
-          wc -l new_domains_cognizant.txt
-          git add new_domains_cognizant.txt
-          git commit -m 'Combine additional source results'
-          git push
+      # - name: Combine additional source results
+      #   run: |
+      #     sort -u subcenter.txt hackertarget.txt cognizant_alientvault.txt > new_domains_cognizant.txt
+      #     wc -l new_domains_cognizant.txt
+      #     git add new_domains_cognizant.txt
+      #     git commit -m 'Combine additional source results'
+      #     git push
 
-      - name: Download Amazon domains
-        run: curl -o amazon_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+      # - name: Download Amazon domains
+      #   run: curl -o amazon_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
 
-      - name: Download Oracle domains
-        run: curl -o oracle_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+      # - name: Download Oracle domains
+      #   run: curl -o oracle_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
 
-      - name: Download DigitalOcean domains
-        run: curl -o digitalocean_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+      # - name: Download DigitalOcean domains
+      #   run: curl -o digitalocean_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
 
-      - name: Download Google domains
-        run: curl -o google_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+      # - name: Download Google domains
+      #   run: curl -o google_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
 
-      - name: Download Microsoft domains
-        run: curl -o microsoft_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+      # - name: Download Microsoft domains
+      #   run: curl -o microsoft_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
 
-      - name: Concatenate all domains
-        run: cat amazon_domains.NAYA.txt oracle_domains.NAYA.txt digitalocean_domains.NAYA.txt google_domains.NAYA.txt microsoft_domains.NAYA.txt > all_domains.NAYA.txt
+      # - name: Concatenate all domains
+      #   run: cat amazon_domains.NAYA.txt oracle_domains.NAYA.txt digitalocean_domains.NAYA.txt google_domains.NAYA.txt microsoft_domains.NAYA.txt > all_domains.NAYA.txt
 
-      - name: Filter for specific domains and subdomains entries
-        run: |
-          grep -Eo '\b(\S+\.)?(cognizant\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_Cognizant_domains.NAYA.txt
+      # - name: Filter for specific domains and subdomains entries
+      #   run: |
+      #     grep -Eo '\b(\S+\.)?(cognizant\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_Cognizant_domains.NAYA.txt
 
-      - name: Commit and push filtered domains
-        run: |
-          git config --global user.email "21btrcc007@jainuniversity.ac.in"
-          git config --global user.name "aseemyashuniversity"
-          git add cloud_Cognizant_domains.NAYA.txt
-          git commit -m "Add processed dlocal domains"
-          git push
+      # - name: Commit and push filtered domains
+      #   run: |
+      #     git config --global user.email "21btrcc007@jainuniversity.ac.in"
+      #     git config --global user.name "aseemyashuniversity"
+      #     git add cloud_Cognizant_domains.NAYA.txt
+      #     git commit -m "Add processed dlocal domains"
+      #     git push
 
       - name: Combine all results
         run: |
-          sort -u cognizant_final1.txt new_domains_cognizant.txt cloud_Cognizant_domains.NAYA > cognizant_final.txt
+          sort -u cognizant_final1.txt new_domains_cognizant.txt cloud_Cognizant_domains.NAYA.txt > cognizant_final.txt
           wc -l cognizant_final.txt
           git add cognizant_final.txt
           git commit -m 'Combine all results'
