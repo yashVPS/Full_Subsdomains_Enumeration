@@ -24,45 +24,46 @@ jobs:
 
       - name: Run subfinder
         run: |
-          #echo "mintel.com" > mintel.txt
-          echo -e "mintel.com\nmintel.cloud\ncomperemedia.com\ngnpd.com" > mintel_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL mintel_scope.txt -o mintel_subs.txt
-          wc -l mintel_subs.txt
-          git add mintel_subs.txt
+          #echo "tesla.com" > tesla.txt
+          echo -e "tesla.com\ntesla.cn\ntesla.services\nteslamotors.com\nsolarcity.com\nteslainsuranceservices.com" > tesla_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL tesla_scope.txt -o tesla_subs.txt
+          wc -l tesla_subs.txt
+          git add tesla_subs.txt
           git commit -m 'Add subfinder results'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a mintel_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> mintel_crtsh_domains2.txt
-          wc -l mintel_crtsh_domains2.txt
-          git add mintel_crtsh_domains2.txt
+          xargs -a tesla_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> tesla_crtsh_domains2.txt
+          wc -l tesla_crtsh_domains2.txt
+          git add tesla_crtsh_domains2.txt
           git commit -m 'Add crtsh.py results'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u mintel_subs.txt mintel_crtsh_domains2.txt > mintel_final1.txt
-          wc -l mintel_final1.txt
-          git add mintel_final1.txt
+          sort -u tesla_subs.txt tesla_crtsh_domains2.txt > tesla_final1.txt
+          wc -l tesla_final1.txt
+          git add tesla_final1.txt
           git commit -m 'Combine subfinder and crtsh results'
           git push
 
       - name: Fetch additional sources
         run: |
-          #echo "mintel.com" > mintel.txt
-          xargs -a mintel_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a mintel_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a mintel_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          #echo "tesla.com" > tesla.txt
+          xargs -a tesla_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a tesla_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a tesla_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "mintel.com,mintel.cloud,comperemedia.com,gnpd.com" mintel_alientvault.txt
+          ./alienvault_hostnamefetcher.sh "tesla.com,solarcity.com,teslamotors.com,teslainsuranceservices.com,tesla.cn" tesla_alientvault.txt
+          python3 ./merklemap2subscan.py -d tesla.com,solarcity.com,teslamotors.com,teslainsuranceservices.com,tesla.cn -o tesla_merkle.txt
 
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt mintel_alientvault.txt jldc.txt > new_domains_mintel.txt
-          wc -l new_domains_mintel.txt
-          git add new_domains_mintel.txt
+          sort -u subcenter.txt hackertarget.txt tesla_alientvault.txt jldc.txt tesla_merkle.txt > new_domains_tesla.txt
+          wc -l new_domains_tesla.txt
+          git add new_domains_tesla.txt
           git commit -m 'Combine additional source results'
           git push
 
@@ -86,20 +87,21 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(mintel\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_mintel_domains.NAYA.txt
+          grep -Eo '\b(\S+\.)?(tesla\.com|solarcity\.com|teslamotors\.com|teslainsuranceservices\.com|tesla\.cn)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_tesla_domains.NAYA.txt
+          wc -l cloud_tesla_domains.NAYA.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "aseemyashuniversity"
-          git add cloud_mintel_domains.NAYA.txt
+          git add cloud_tesla_domains.NAYA.txt
           git commit -m "Add processed dlocal domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u mintel_final1.txt new_domains_mintel.txt cloud_mintel_domains.NAYA.txt > mintel_final.txt
-          wc -l mintel_final.txt
-          git add mintel_final.txt
+          sort -u tesla_final1.txt new_domains_tesla.txt cloud_tesla_domains.NAYA.txt > tesla_final.txt
+          wc -l tesla_final.txt
+          git add tesla_final.txt
           git commit -m 'Combine all results'
           git push
