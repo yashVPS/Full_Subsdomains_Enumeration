@@ -56,14 +56,14 @@ jobs:
           xargs -a tesla_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
           ./alienvault_hostnamefetcher.sh "tesla.com,solarcity.com,teslamotors.com,teslainsuranceservices.com,tesla.cn" tesla_alientvault.txt
-          python3 ./merklemap2subscan.py -d tesla.com,solarcity.com,teslamotors.com,teslainsuranceservices.com,tesla.cn -o tesla_merkle.txt
+          python3 ./merklemap2subscan.py -d tesla.com,solarcity.com,teslamotors.com,teslainsuranceservices.com,tesla.cn -o tesla_merkle.txt -t 5
 
 
       - name: Combine additional source results
         run: |
           sort -u subcenter.txt hackertarget.txt tesla_alientvault.txt jldc.txt tesla_merkle.txt > new_domains_tesla.txt
           wc -l new_domains_tesla.txt
-          git add new_domains_tesla.txt
+          git add new_domains_tesla.txt tesla_merkle.txt
           git commit -m 'Combine additional source results'
           git push
 
