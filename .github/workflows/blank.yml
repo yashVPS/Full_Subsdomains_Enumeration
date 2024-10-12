@@ -24,46 +24,43 @@ jobs:
 
       - name: Run subfinder
         run: |
-          #echo "cognizant.com" > cognizant_habe.txt
-          echo -e "cognizant.com" > cognizant_habe_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL cognizant_habe_scope.txt -o cognizant_habe_subs.txt
-          wc -l cognizant_habe_subs.txt
-          git add cognizant_habe_subs.txt
+          echo -e "paloaltonetworks.com" > paloalto_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL paloalto_scope.txt -o paloalto_subs.txt
+          wc -l paloalto_subs.txt
+          git add paloalto_subs.txt
           git commit -m 'Add subfinder results'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a cognizant_habe_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> cognizant_habe_crtsh_domains2.txt
-          wc -l cognizant_habe_crtsh_domains2.txt
-          git add cognizant_habe_crtsh_domains2.txt
+          xargs -a paloalto_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> paloalto_crtsh_domains2.txt
+          wc -l paloalto_crtsh_domains2.txt
+          git add paloalto_crtsh_domains2.txt
           git commit -m 'Add crtsh.py results'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u cognizant_habe_subs.txt cognizant_habe_crtsh_domains2.txt > cognizant_habe_final1.txt
-          wc -l cognizant_habe_final1.txt
-          git add cognizant_habe_final1.txt
+          sort -u paloalto_subs.txt paloalto_crtsh_domains2.txt > paloalto_final1.txt
+          wc -l paloalto_final1.txt
+          git add paloalto_final1.txt
           git commit -m 'Combine subfinder and crtsh results'
           git push
 
       - name: Fetch additional sources
         run: |
-          #echo "cognizant.com" > cognizant_habe.txt
-          xargs -a cognizant_habe_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a cognizant_habe_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a cognizant_habe_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a paloalto_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a paloalto_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a paloalto_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "cognizant.com" cognizant_habe_alientvault.txt
-          python3 ./merklemap2subscan.py -d cognizant.com -o cognizant_habe_merkle.txt -t 5
-
+          ./alienvault_hostnamefetcher.sh "paloaltonetworks.com" paloalto_alientvault.txt
+          python3 ./merklemap2subscan.py -d paloaltonetworks.com -o paloalto_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt cognizant_habe_alientvault.txt jldc.txt cognizant_habe_merkle.txt > new_domains_cognizant_habe.txt
-          wc -l new_domains_cognizant_habe.txt
-          git add new_domains_cognizant_habe.txt cognizant_habe_merkle.txt
+          sort -u subcenter.txt hackertarget.txt paloalto_alientvault.txt jldc.txt paloalto_merkle.txt > new_domains_paloalto.txt
+          wc -l new_domains_paloalto.txt
+          git add new_domains_paloalto.txt paloalto_merkle.txt
           git commit -m 'Combine additional source results'
           git push
 
@@ -87,21 +84,21 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(cognizant\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_cognizant_habe_domains.NAYA.txt
-          wc -l cloud_cognizant_habe_domains.NAYA.txt
+          grep -Eo '\b(\S+\.)?(paloaltonetworks\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_paloalto_domains.NAYA.txt
+          wc -l cloud_paloalto_domains.NAYA.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "aseemyashuniversity"
-          git add cloud_cognizant_habe_domains.NAYA.txt
-          git commit -m "Add processed dlocal domains"
+          git add cloud_paloalto_domains.NAYA.txt
+          git commit -m "Add processed paloaltonetworks domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u cognizant_habe_final1.txt new_domains_cognizant_habe.txt cloud_cognizant_habe_domains.NAYA.txt > cognizant_habe_final.txt
-          wc -l cognizant_habe_final.txt
-          git add cognizant_habe_final.txt
+          sort -u paloalto_final1.txt new_domains_paloalto.txt cloud_paloalto_domains.NAYA.txt > paloalto_final.txt
+          wc -l paloalto_final.txt
+          git add paloalto_final.txt
           git commit -m 'Combine all results'
           git push
