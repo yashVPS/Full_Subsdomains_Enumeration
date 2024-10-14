@@ -1,0 +1,8 @@
+volume.com
+media-cdn.volume.com
+support.volume.com
+dev-cdn.volume.com
+www.creators.volume.com
+creators.volume.com
+dev-media-cdn.volume.com
+*.volume.com
