@@ -24,43 +24,43 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "paloaltonetworks.com" > paloalto_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL paloalto_scope.txt -o paloalto_subs.txt
-          wc -l paloalto_subs.txt
-          git add paloalto_subs.txt
+          echo -e "volume.com" > volume_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL volume_scope.txt -o volume_subs.txt
+          wc -l volume_subs.txt
+          git add volume_subs.txt
           git commit -m 'Add subfinder results'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a paloalto_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> paloalto_crtsh_domains2.txt
-          wc -l paloalto_crtsh_domains2.txt
-          git add paloalto_crtsh_domains2.txt
+          xargs -a volume_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> volume_crtsh_domains2.txt
+          wc -l volume_crtsh_domains2.txt
+          git add volume_crtsh_domains2.txt
           git commit -m 'Add crtsh.py results'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u paloalto_subs.txt paloalto_crtsh_domains2.txt > paloalto_final1.txt
-          wc -l paloalto_final1.txt
-          git add paloalto_final1.txt
+          sort -u volume_subs.txt volume_crtsh_domains2.txt > volume_final1.txt
+          wc -l volume_final1.txt
+          git add volume_final1.txt
           git commit -m 'Combine subfinder and crtsh results'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a paloalto_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a paloalto_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a paloalto_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a volume_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a volume_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a volume_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "paloaltonetworks.com" paloalto_alientvault.txt
-          python3 ./merklemap2subscan.py -d paloaltonetworks.com -o paloalto_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "volume.com" volume_alientvault.txt
+          python3 ./merklemap2subscan.py -d volume.com -o volume_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt paloalto_alientvault.txt jldc.txt paloalto_merkle.txt > new_domains_paloalto.txt
-          wc -l new_domains_paloalto.txt
-          git add new_domains_paloalto.txt paloalto_merkle.txt
+          sort -u subcenter.txt hackertarget.txt volume_alientvault.txt jldc.txt volume_merkle.txt > new_domains_volume.txt
+          wc -l new_domains_volume.txt
+          git add new_domains_volume.txt volume_merkle.txt
           git commit -m 'Combine additional source results'
           git push
 
@@ -84,21 +84,21 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(paloaltonetworks\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_paloalto_domains.NAYA.txt
-          wc -l cloud_paloalto_domains.NAYA.txt
+          grep -Eo '\b(\S+\.)?(volume\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_volume_domains.NAYA.txt
+          wc -l cloud_volume_domains.NAYA.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "aseemyashuniversity"
-          git add cloud_paloalto_domains.NAYA.txt
-          git commit -m "Add processed paloaltonetworks domains"
+          git add cloud_volume_domains.NAYA.txt
+          git commit -m "Add processed volume domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u paloalto_final1.txt new_domains_paloalto.txt cloud_paloalto_domains.NAYA.txt > paloalto_final.txt
-          wc -l paloalto_final.txt
-          git add paloalto_final.txt
+          sort -u volume_final1.txt new_domains_volume.txt cloud_volume_domains.NAYA.txt > volume_final.txt
+          wc -l volume_final.txt
+          git add volume_final.txt
           git commit -m 'Combine all results'
           git push
