@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow
+name: SentinelOne Subdomain Recon Workflow
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "volume.com" > volume_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL volume_scope.txt -o volume_subs.txt
-          wc -l volume_subs.txt
-          git add volume_subs.txt
-          git commit -m 'Add subfinder results'
+          echo -e "sentinelone.com\nsentinelone.net" > sentinelone_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL sentinelone_scope.txt -o sentinelone_subs.txt
+          wc -l sentinelone_subs.txt
+          git add sentinelone_subs.txt
+          git commit -m 'Add subfinder results for SentinelOne'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a volume_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> volume_crtsh_domains2.txt
-          wc -l volume_crtsh_domains2.txt
-          git add volume_crtsh_domains2.txt
-          git commit -m 'Add crtsh.py results'
+          xargs -a sentinelone_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> sentinelone_crtsh_domains.txt
+          wc -l sentinelone_crtsh_domains.txt
+          git add sentinelone_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for SentinelOne'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u volume_subs.txt volume_crtsh_domains2.txt > volume_final1.txt
-          wc -l volume_final1.txt
-          git add volume_final1.txt
-          git commit -m 'Combine subfinder and crtsh results'
+          sort -u sentinelone_subs.txt sentinelone_crtsh_domains.txt > sentinelone_final1.txt
+          wc -l sentinelone_final1.txt
+          git add sentinelone_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for SentinelOne'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a volume_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a volume_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a volume_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a sentinelone_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a sentinelone_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a sentinelone_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "volume.com" volume_alientvault.txt
-          python3 ./merklemap2subscan.py -d volume.com -o volume_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "sentinelone.com,sentinelone.net" sentinelone_alienvault.txt
+          python3 ./merklemap2subscan.py -d sentinelone.com,sentinelone.net -o sentinelone_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt volume_alientvault.txt jldc.txt volume_merkle.txt > new_domains_volume.txt
-          wc -l new_domains_volume.txt
-          git add new_domains_volume.txt volume_merkle.txt
-          git commit -m 'Combine additional source results'
+          sort -u subcenter.txt hackertarget.txt sentinelone_alienvault.txt jldc.txt sentinelone_merkle.txt > sentinelone_combined_domains.txt
+          wc -l sentinelone_combined_domains.txt
+          git add sentinelone_combined_domains.txt sentinelone_merkle.txt
+          git commit -m 'Combine additional source results for SentinelOne'
           git push
 
       - name: Download Amazon domains
@@ -84,21 +84,21 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(volume\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > cloud_volume_domains.NAYA.txt
-          wc -l cloud_volume_domains.NAYA.txt
+          grep -Eo '\b(\S+\.)?(sentinelone\.com|sentinelone\.net)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > sentinelone_cloud_domains.txt
+          wc -l sentinelone_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "aseemyashuniversity"
-          git add cloud_volume_domains.NAYA.txt
-          git commit -m "Add processed volume domains"
+          git add sentinelone_cloud_domains.txt
+          git commit -m "Add processed SentinelOne domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u volume_final1.txt new_domains_volume.txt cloud_volume_domains.NAYA.txt > volume_final.txt
-          wc -l volume_final.txt
-          git add volume_final.txt
-          git commit -m 'Combine all results'
+          sort -u sentinelone_final1.txt sentinelone_combined_domains.txt sentinelone_cloud_domains.txt > sentinelone_final_results.txt
+          wc -l sentinelone_final_results.txt
+          git add sentinelone_final_results.txt
+          git commit -m 'Combine all results for SentinelOne'
           git push
