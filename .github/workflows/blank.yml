@@ -1,4 +1,4 @@
-name: SentinelOne Subdomain Recon Workflow
+name: Subdomain Recon Workflow
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "sentinelone.com\nsentinelone.net" > sentinelone_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL sentinelone_scope.txt -o sentinelone_subs.txt
-          wc -l sentinelone_subs.txt
-          git add sentinelone_subs.txt
-          git commit -m 'Add subfinder results for SentinelOne'
+          echo -e "canada.fanduel.com\nracing-staging.fanduel.com\npdx.tvg.com\nperftest.aw.fdbox.net\ndev.us.fdbox.net\nperftest.fdbox.net" > fanduel_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL fanduel_scope.txt -o fanduel_subs.txt
+          wc -l fanduel_subs.txt
+          git add fanduel_subs.txt
+          git commit -m 'Add subfinder results for FanDuel'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a sentinelone_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> sentinelone_crtsh_domains.txt
-          wc -l sentinelone_crtsh_domains.txt
-          git add sentinelone_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for SentinelOne'
+          xargs -a fanduel_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> fanduel_crtsh_domains.txt
+          wc -l fanduel_crtsh_domains.txt
+          git add fanduel_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for FanDuel'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u sentinelone_subs.txt sentinelone_crtsh_domains.txt > sentinelone_final1.txt
-          wc -l sentinelone_final1.txt
-          git add sentinelone_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for SentinelOne'
+          sort -u fanduel_subs.txt fanduel_crtsh_domains.txt > fanduel_final1.txt
+          wc -l fanduel_final1.txt
+          git add fanduel_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for FanDuel'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a sentinelone_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a sentinelone_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a sentinelone_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a fanduel_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a fanduel_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a fanduel_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "sentinelone.com,sentinelone.net" sentinelone_alienvault.txt
-          python3 ./merklemap2subscan.py -d sentinelone.com,sentinelone.net -o sentinelone_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "canada.fanduel.com,racing-staging.fanduel.com,pdx.tvg.com,perftest.aw.fdbox.net,dev.us.fdbox.net,perftest.fdbox.net" fanduel_alienvault.txt
+          python3 ./merklemap2subscan.py -d canada.fanduel.com,racing-staging.fanduel.com,pdx.tvg.com,perftest.aw.fdbox.net,dev.us.fdbox.net,perftest.fdbox.net -o fanduel_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt sentinelone_alienvault.txt jldc.txt sentinelone_merkle.txt > sentinelone_combined_domains.txt
-          wc -l sentinelone_combined_domains.txt
-          git add sentinelone_combined_domains.txt sentinelone_merkle.txt
-          git commit -m 'Combine additional source results for SentinelOne'
+          sort -u subcenter.txt hackertarget.txt fanduel_alienvault.txt jldc.txt fanduel_merkle.txt > fanduel_combined_domains.txt
+          wc -l fanduel_combined_domains.txt
+          git add fanduel_combined_domains.txt fanduel_merkle.txt
+          git commit -m 'Combine additional source results for FanDuel'
           git push
 
       - name: Download Amazon domains
@@ -84,21 +84,21 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(sentinelone\.com|sentinelone\.net)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > sentinelone_cloud_domains.txt
-          wc -l sentinelone_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(canada\.fanduel\.com|racing-staging\.fanduel\.com|pdx\.tvg\.com|perftest\.aw\.fdbox\.net|dev\.us\.fdbox\.net|perftest\.fdbox\.net)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > fanduel_cloud_domains.txt
+          wc -l fanduel_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "aseemyashuniversity"
-          git add sentinelone_cloud_domains.txt
-          git commit -m "Add processed SentinelOne domains"
+          git add fanduel_cloud_domains.txt
+          git commit -m "Add processed FanDuel domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u sentinelone_final1.txt sentinelone_combined_domains.txt sentinelone_cloud_domains.txt > sentinelone_final_results.txt
-          wc -l sentinelone_final_results.txt
-          git add sentinelone_final_results.txt
-          git commit -m 'Combine all results for SentinelOne'
+          sort -u fanduel_final1.txt fanduel_combined_domains.txt fanduel_cloud_domains.txt > fanduel_final_results.txt
+          wc -l fanduel_final_results.txt
+          git add fanduel_final_results.txt
+          git commit -m 'Combine all results for FanDuel'
           git push
