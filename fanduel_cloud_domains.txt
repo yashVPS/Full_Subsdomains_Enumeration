@@ -1,0 +1,8 @@
+use1.dev.us.fdbox.net
+use1.dev.us.fdbox.net
+racing-staging.fanduel.com
+service.racing-staging.fanduel.com
+api.racing-staging.fanduel.com
+racing-staging.fanduel.com
+service.racing-staging.fanduel.com
+api.racing-staging.fanduel.com
