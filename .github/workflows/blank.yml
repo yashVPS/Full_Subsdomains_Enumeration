@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "canada.fanduel.com\nracing-staging.fanduel.com\npdx.tvg.com\nperftest.aw.fdbox.net\ndev.us.fdbox.net\nperftest.fdbox.net" > fanduel_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL fanduel_scope.txt -o fanduel_subs.txt
-          wc -l fanduel_subs.txt
-          git add fanduel_subs.txt
-          git commit -m 'Add subfinder results for FanDuel'
+          echo -e "tomtom-global.com\ntomtom.com\ntomtomgroup.com" > tomtom_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL tomtom_scope.txt -o tomtom_subs.txt
+          wc -l tomtom_subs.txt
+          git add tomtom_subs.txt
+          git commit -m 'Add subfinder results for TomTom'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a fanduel_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> fanduel_crtsh_domains.txt
-          wc -l fanduel_crtsh_domains.txt
-          git add fanduel_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for FanDuel'
+          xargs -a tomtom_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> tomtom_crtsh_domains.txt
+          wc -l tomtom_crtsh_domains.txt
+          git add tomtom_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for TomTom'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u fanduel_subs.txt fanduel_crtsh_domains.txt > fanduel_final1.txt
-          wc -l fanduel_final1.txt
-          git add fanduel_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for FanDuel'
+          sort -u tomtom_subs.txt tomtom_crtsh_domains.txt > tomtom_final1.txt
+          wc -l tomtom_final1.txt
+          git add tomtom_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for TomTom'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a fanduel_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a fanduel_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a fanduel_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a tomtom_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a tomtom_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a tomtom_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "canada.fanduel.com,racing-staging.fanduel.com,pdx.tvg.com,perftest.aw.fdbox.net,dev.us.fdbox.net,perftest.fdbox.net" fanduel_alienvault.txt
-          python3 ./merklemap2subscan.py -d canada.fanduel.com,racing-staging.fanduel.com,pdx.tvg.com,perftest.aw.fdbox.net,dev.us.fdbox.net,perftest.fdbox.net -o fanduel_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "tomtom-global.com,tomtom.com,tomtomgroup.com" tomtom_alienvault.txt
+          python3 ./merklemap2subscan.py -d tomtom-global.com,tomtom.com,tomtomgroup.com -o tomtom_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt fanduel_alienvault.txt jldc.txt fanduel_merkle.txt > fanduel_combined_domains.txt
-          wc -l fanduel_combined_domains.txt
-          git add fanduel_combined_domains.txt fanduel_merkle.txt
-          git commit -m 'Combine additional source results for FanDuel'
+          sort -u subcenter.txt hackertarget.txt tomtom_alienvault.txt jldc.txt tomtom_merkle.txt > tomtom_combined_domains.txt
+          wc -l tomtom_combined_domains.txt
+          git add tomtom_combined_domains.txt tomtom_merkle.txt
+          git commit -m 'Combine additional source results for TomTom'
           git push
 
       - name: Download Amazon domains
@@ -84,21 +84,21 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(canada\.fanduel\.com|racing-staging\.fanduel\.com|pdx\.tvg\.com|perftest\.aw\.fdbox\.net|dev\.us\.fdbox\.net|perftest\.fdbox\.net)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > fanduel_cloud_domains.txt
-          wc -l fanduel_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(tomtom-global\.com|tomtom\.com|tomtomgroup\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > tomtom_cloud_domains.txt
+          wc -l tomtom_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "aseemyashuniversity"
-          git add fanduel_cloud_domains.txt
-          git commit -m "Add processed FanDuel domains"
+          git add tomtom_cloud_domains.txt
+          git commit -m "Add processed TomTom domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u fanduel_final1.txt fanduel_combined_domains.txt fanduel_cloud_domains.txt > fanduel_final_results.txt
-          wc -l fanduel_final_results.txt
-          git add fanduel_final_results.txt
-          git commit -m 'Combine all results for FanDuel'
+          sort -u tomtom_final1.txt tomtom_combined_domains.txt tomtom_cloud_domains.txt > tomtom_final_results.txt
+          wc -l tomtom_final_results.txt
+          git add tomtom_final_results.txt
+          git commit -m 'Combine all results for TomTom'
           git push
