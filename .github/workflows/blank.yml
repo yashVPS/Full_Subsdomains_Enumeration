@@ -11,8 +11,8 @@ jobs:
 
       - name: Install Git and configure user
         run: |
-          git config --global user.name "aseemyash"
-          git config --global user.email "aseemyash98@gmail.com"
+          git config --global user.name "ASEEMYASH007"
+          git config --global user.email "21btrcc007@jainuniversity.ac.in"
 
       - name: Download Subfinder
         run: |
@@ -90,7 +90,7 @@ jobs:
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
-          git config --global user.name "aseemyashuniversity"
+          git config --global user.name "ASEEMYASH007"
           git add bytedance_cloud_domains.txt
           git commit -m "Add processed ByteDance domains"
           git push
