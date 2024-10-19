@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow
+name: Subdomain Recon Workflows
 
 on: [push]
 
