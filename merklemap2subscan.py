@@ -4,6 +4,7 @@ import json
 import threading
 from queue import Queue
 import time
+import random  # For generating a random delay
 
 # Function to check subdomains for a single domain
 def check_domain(domain, all_domains, quiet, output_lock, max_retries=3):
@@ -13,6 +14,9 @@ def check_domain(domain, all_domains, quiet, output_lock, max_retries=3):
     domain_query = f"*.{domain}"
 
     while True:
+        if not quiet:
+            print(f"Scanning page {page} for domain: {domain}")
+
         for attempt in range(max_retries):
             try:
                 # Perform the API request for the given domain and page
@@ -24,7 +28,7 @@ def check_domain(domain, all_domains, quiet, output_lock, max_retries=3):
             except requests.RequestException as e:
                 print(f"Error fetching data for {domain} on page {page}: {e}")
                 if attempt < max_retries - 1:  # If not the last attempt, wait before retrying
-                    time.sleep(1)
+                    time.sleep(1)  # Wait 1 second before retrying
                 else:
                     return  # Exit if all retries failed
 
@@ -48,6 +52,12 @@ def check_domain(domain, all_domains, quiet, output_lock, max_retries=3):
 
         # Move to the next page
         page += 1
+
+        # Add a random delay between 5 to 8 seconds before fetching the next page
+        delay = random.uniform(5, 8)
+        if not quiet:
+            print(f"Waiting for {delay:.2f} seconds before the next request...")
+        time.sleep(delay)
 
 # Thread worker function
 def worker(queue, all_domains, quiet, output_lock):
