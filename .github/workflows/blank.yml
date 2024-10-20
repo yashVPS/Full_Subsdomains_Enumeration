@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "trip.com\ntravix.com" > trip_company_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL trip_company_scope.txt -o trip_company_subs.txt
-          wc -l trip_company_subs.txt
-          git add trip_company_subs.txt
-          git commit -m 'Add subfinder results for Trip company'
+          echo -e "moveworks.io\nmoveworks.ai" > moveworks_company_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL moveworks_company_scope.txt -o moveworks_company_subs.txt
+          wc -l moveworks_company_subs.txt
+          git add moveworks_company_subs.txt
+          git commit -m 'Add subfinder results for Moveworks company'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a trip_company_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> trip_company_crtsh_domains.txt
-          wc -l trip_company_crtsh_domains.txt
-          git add trip_company_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for Trip company'
+          xargs -a moveworks_company_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> moveworks_company_crtsh_domains.txt
+          wc -l moveworks_company_crtsh_domains.txt
+          git add moveworks_company_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for Moveworks company'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u trip_company_subs.txt trip_company_crtsh_domains.txt > trip_company_final1.txt
-          wc -l trip_company_final1.txt
-          git add trip_company_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for Trip company'
+          sort -u moveworks_company_subs.txt moveworks_company_crtsh_domains.txt > moveworks_company_final1.txt
+          wc -l moveworks_company_final1.txt
+          git add moveworks_company_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for Moveworks company'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a trip_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a trip_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a trip_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a moveworks_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a moveworks_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a moveworks_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "trip.com,travix.com" trip_company_alienvault.txt
-          python3 ./merklemap2subscan.py -d trip.com,travix.com -o trip_company_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "moveworks.io,moveworks.ai" moveworks_company_alienvault.txt
+          python3 ./merklemap2subscan.py -d moveworks.io,moveworks.ai -o moveworks_company_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt trip_company_alienvault.txt jldc.txt trip_company_merkle.txt > trip_company_combined_domains.txt
-          wc -l trip_company_combined_domains.txt
-          git add trip_company_combined_domains.txt trip_company_merkle.txt
-          git commit -m 'Combine additional source results for Trip company'
+          sort -u subcenter.txt hackertarget.txt moveworks_company_alienvault.txt jldc.txt moveworks_company_merkle.txt > moveworks_company_combined_domains.txt
+          wc -l moveworks_company_combined_domains.txt
+          git add moveworks_company_combined_domains.txt moveworks_company_merkle.txt
+          git commit -m 'Combine additional source results for Moveworks company'
           git push
 
       - name: Download Amazon domains
@@ -84,21 +84,21 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(trip\.com|travix\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > trip_company_cloud_domains.txt
-          wc -l trip_company_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(moveworks\.io|moveworks\.ai)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > moveworks_company_cloud_domains.txt
+          wc -l moveworks_company_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add trip_company_cloud_domains.txt
-          git commit -m "Add processed Trip company domains"
+          git add moveworks_company_cloud_domains.txt
+          git commit -m "Add processed Moveworks company domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u trip_company_final1.txt trip_company_combined_domains.txt trip_company_cloud_domains.txt > trip_company_final_results.txt
-          wc -l trip_company_final_results.txt
-          git add trip_company_final_results.txt
-          git commit -m 'Combine all results for Trip company'
+          sort -u moveworks_company_final1.txt moveworks_company_combined_domains.txt moveworks_company_cloud_domains.txt > moveworks_company_final_results.txt
+          wc -l moveworks_company_final_results.txt
+          git add moveworks_company_final_results.txt
+          git commit -m 'Combine all results for Moveworks company'
           git push
