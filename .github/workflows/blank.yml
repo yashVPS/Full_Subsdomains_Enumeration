@@ -25,11 +25,11 @@ jobs:
       - name: Run subfinder
         run: |
           echo -e "geico.com" > geico_company_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL geico_company_scope.txt -o geico_company_subs.txt
+          #./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL geico_company_scope.txt -o geico_company_subs.txt
           wc -l geico_company_subs.txt
-          git add geico_company_subs.txt
-          git commit -m 'Add subfinder results for GEICO company'
-          git push
+          #git add geico_company_subs.txt
+          #git commit -m 'Add subfinder results for GEICO company'
+          #git push
 
       - name: Run crtsh.py
         run: |
@@ -68,7 +68,7 @@ jobs:
         run: curl -o amazon_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
 
       - name: Download Oracle domains
-        run: curl --o oracle_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+        run: curl -o oracle_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
 
       - name: Download DigitalOcean domains
         run: curl -o digitalocean_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
