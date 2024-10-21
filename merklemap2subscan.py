@@ -54,7 +54,7 @@ def check_domain(domain, all_domains, quiet, output_lock, max_retries=3):
         page += 1
 
         # Add a random delay between 5 to 8 seconds before fetching the next page
-        delay = random.uniform(5, 8)
+        delay = random.uniform(8, 15)
         if not quiet:
             print(f"Waiting for {delay:.2f} seconds before the next request...")
         time.sleep(delay)
