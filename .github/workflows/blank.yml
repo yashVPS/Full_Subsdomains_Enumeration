@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "geico.com" > geico_company_scope.txt
-          #./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL geico_company_scope.txt -o geico_company_subs.txt
-          wc -l geico_company_subs.txt
-          #git add geico_company_subs.txt
-          #git commit -m 'Add subfinder results for GEICO company'
-          #git push
+          echo -e "roblox.com\nrbx.com\nguilded.gg" > roblox_company_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL roblox_company_scope.txt -recursive -o roblox_company_subs.txt
+          wc -l roblox_company_subs.txt
+          git add roblox_company_subs.txt
+          git commit -m 'Add subfinder results for Roblox company'
+          git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a geico_company_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> geico_company_crtsh_domains.txt
-          wc -l geico_company_crtsh_domains.txt
-          git add geico_company_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for GEICO company'
+          xargs -a roblox_company_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> roblox_company_crtsh_domains.txt
+          wc -l roblox_company_crtsh_domains.txt
+          git add roblox_company_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for Roblox company'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u geico_company_subs.txt geico_company_crtsh_domains.txt > geico_company_final1.txt
-          wc -l geico_company_final1.txt
-          git add geico_company_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for GEICO company'
+          sort -u roblox_company_subs.txt roblox_company_crtsh_domains.txt > roblox_company_final1.txt
+          wc -l roblox_company_final1.txt
+          git add roblox_company_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for Roblox company'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a geico_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a geico_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a geico_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a roblox_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a roblox_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a roblox_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "geico.com" geico_company_alienvault.txt
-          python3 ./merklemap2subscan.py -d geico.com -o geico_company_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "roblox.com,rbx.com,guilded.gg" roblox_company_alienvault.txt
+          python3 ./merklemap2subscan.py -d "roblox.com,rbx.com,guilded.gg" -o roblox_company_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt geico_company_alienvault.txt jldc.txt geico_company_merkle.txt > geico_company_combined_domains.txt
-          wc -l geico_company_combined_domains.txt
-          git add geico_company_combined_domains.txt geico_company_merkle.txt
-          git commit -m 'Combine additional source results for GEICO company'
+          sort -u subcenter.txt hackertarget.txt roblox_company_alienvault.txt jldc.txt roblox_company_merkle.txt > roblox_company_combined_domains.txt
+          wc -l roblox_company_combined_domains.txt
+          git add roblox_company_combined_domains.txt roblox_company_merkle.txt
+          git commit -m 'Combine additional source results for Roblox company'
           git push
 
       - name: Download Amazon domains
@@ -84,21 +84,21 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(geico\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > geico_company_cloud_domains.txt
-          wc -l geico_company_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(roblox\.com|rbx\.com|guilded\.gg)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > roblox_company_cloud_domains.txt
+          wc -l roblox_company_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add geico_company_cloud_domains.txt
-          git commit -m "Add processed GEICO company domains"
+          git add roblox_company_cloud_domains.txt
+          git commit -m "Add processed Roblox company domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u geico_company_final1.txt geico_company_combined_domains.txt geico_company_cloud_domains.txt > geico_company_final_results.txt
-          wc -l geico_company_final_results.txt
-          git add geico_company_final_results.txt
-          git commit -m 'Combine all results for GEICO company'
+          sort -u roblox_company_final1.txt roblox_company_combined_domains.txt roblox_company_cloud_domains.txt > roblox_company_final_results.txt
+          wc -l roblox_company_final_results.txt
+          git add roblox_company_final_results.txt
+          git commit -m 'Combine all results for Roblox company'
           git push
