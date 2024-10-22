@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow
+name: Subdomain Recon Workflow for RBX Company
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "tomtom.com" > tomtom_company_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL tomtom_company_scope.txt -recursive -o tomtom_company_subs.txt
-          wc -l tomtom_company_subs.txt
-          git add tomtom_company_subs.txt
-          git commit -m 'Add subfinder results for TomTom company'
+          echo "roblox.com,rbx.com,guilded.gg" > rbx_company_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL rbx_company_scope.txt -recursive -o rbx_company_subs.txt
+          wc -l rbx_company_subs.txt
+          git add rbx_company_subs.txt
+          git commit -m 'Add subfinder results for RBX company'
           git push
 
       - name: Run crtsh.py
         run: |
-          xargs -a tomtom_company_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> tomtom_company_crtsh_domains.txt
-          wc -l tomtom_company_crtsh_domains.txt
-          git add tomtom_company_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for TomTom company'
+          python3 ./crtsh.py -d "roblox.com,rbx.com,guilded.gg" -r -w >> rbx_company_crtsh_domains.txt
+          wc -l rbx_company_crtsh_domains.txt
+          git add rbx_company_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for RBX company'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u tomtom_company_subs.txt tomtom_company_crtsh_domains.txt > tomtom_company_final1.txt
-          wc -l tomtom_company_final1.txt
-          git add tomtom_company_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for TomTom company'
+          sort -u rbx_company_subs.txt rbx_company_crtsh_domains.txt > rbx_final1.txt
+          wc -l rbx_final1.txt
+          git add rbx_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for RBX company'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a tomtom_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a tomtom_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a tomtom_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          curl -s "https://jldc.me/anubis/subdomains/roblox.com" | tr -d "[]\"" | tr "," "\n" >> jldc.txt
+          curl -s "https://api.subdomain.center/?domain=roblox.com" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt
+          curl -s "https://api.hackertarget.com/hostsearch/?q=roblox.com" | cut -d"," -f1 >> hackertarget.txt
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "tomtom.com" tomtom_company_alienvault.txt
-          python3 ./merklemap2subscan.py -d "tomtom.com" -o tomtom_company_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "roblox.com" rbx_company_alienvault.txt
+          python3 ./merklemap2subscan.py -d "roblox.com" -o rbx_company_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt tomtom_company_alienvault.txt jldc.txt tomtom_company_merkle.txt > tomtom_company_combined_domains.txt
-          wc -l tomtom_company_combined_domains.txt
-          git add tomtom_company_combined_domains.txt tomtom_company_merkle.txt
-          git commit -m 'Combine additional source results for TomTom company'
+          sort -u subcenter.txt hackertarget.txt rbx_company_alienvault.txt jldc.txt rbx_company_merkle.txt > rbx_company_combined_domains.txt
+          wc -l rbx_company_combined_domains.txt
+          git add rbx_company_combined_domains.txt rbx_company_merkle.txt
+          git commit -m 'Combine additional source results for RBX company'
           git push
 
       - name: Download Amazon domains
@@ -84,21 +84,42 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(tomtom\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > tomtom_company_cloud_domains.txt
-          wc -l tomtom_company_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(roblox\.com|rbx\.com|guilded\.gg)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > rbx_company_cloud_domains.txt
+          wc -l rbx_company_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add tomtom_company_cloud_domains.txt
-          git commit -m "Add processed TomTom company domains"
+          git add rbx_company_cloud_domains.txt
+          git commit -m "Add processed RBX company domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u tomtom_company_final1.txt tomtom_company_combined_domains.txt tomtom_company_cloud_domains.txt > tomtom_company_final_results.txt
-          wc -l tomtom_company_final_results.txt
-          git add tomtom_company_final_results.txt
-          git commit -m 'Combine all results for TomTom company'
+          sort -u rbx_final1.txt rbx_company_combined_domains.txt rbx_company_cloud_domains.txt > rbx_company_final_results.txt
+          wc -l rbx_company_final_results.txt
+          git add rbx_company_final_results.txt
+          git commit -m 'Combine all results for RBX company'
+          git push
+
+      - name: Clean wildcard domains
+        run: |
+          sed 's/^\*\.\(.*\)$/\1/' rbx_company_final_results.txt > rbx_final_results_cleaned.txt
+          wc -l rbx_final_results_cleaned.txt
+          git add rbx_final_results_cleaned.txt
+          git commit -m "Cleaned wildcard domains in final results"
+          git push
+
+      - name: Validate DNS records for subdomains
+        run: |
+          touch valid_rbx_subdomains.txt
+          while read -r domain; do
+            if host "$domain" &> /dev/null; then
+              echo "$domain" >> valid_rbx_subdomains.txt
+            fi
+          done < rbx_final_results_cleaned.txt
+          wc -l valid_rbx_subdomains.txt
+          git add valid_rbx_subdomains.txt
+          git commit -m "Add valid DNS subdomains for RBX"
           git push
