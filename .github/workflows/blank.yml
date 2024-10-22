@@ -14,92 +14,91 @@ jobs:
           git config --global user.name "ASEEMYASH007"
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
 
-      # - name: Download Subfinder
-      #   run: |
-      #     mkdir -p /home/runner/configz/subfinder
-      #     cp provider-config.yaml /home/runner/configz/subfinder
-      #     wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
-      #     unzip subfinder_2.6.6_linux_amd64.zip
-      #     sudo chmod +x *
+      - name: Download Subfinder
+        run: |
+          mkdir -p /home/runner/configz/subfinder
+          cp provider-config.yaml /home/runner/configz/subfinder
+          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
+          unzip subfinder_2.6.6_linux_amd64.zip
+          sudo chmod +x *
 
-      # - name: Run subfinder
-      #   run: |
-      #     echo -e "roblox.com\nrbx.com\nguilded.gg" > roblox_company_scope.txt
-      #     ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL roblox_company_scope.txt -recursive -o roblox_company_subs.txt
-      #     wc -l roblox_company_subs.txt
-      #     git add roblox_company_subs.txt
-      #     git commit -m 'Add subfinder results for Roblox company'
-      #     git push
+      - name: Run subfinder
+        run: |
+          echo -e "tomtom.com" > tomtom_company_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL tomtom_company_scope.txt -recursive -o tomtom_company_subs.txt
+          wc -l tomtom_company_subs.txt
+          git add tomtom_company_subs.txt
+          git commit -m 'Add subfinder results for TomTom company'
+          git push
 
-      # - name: Run crtsh.py
-      #   run: |
-      #     xargs -a roblox_company_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> roblox_company_crtsh_domains.txt
-      #     wc -l roblox_company_crtsh_domains.txt
-      #     git add roblox_company_crtsh_domains.txt
-      #     git commit -m 'Add crtsh.py results for Roblox company'
-      #     git push
+      - name: Run crtsh.py
+        run: |
+          xargs -a tomtom_company_scope.txt -I {} python3 ./crtsh.py -d {} -r -w >> tomtom_company_crtsh_domains.txt
+          wc -l tomtom_company_crtsh_domains.txt
+          git add tomtom_company_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for TomTom company'
+          git push
 
-      # - name: Combine subfinder and crtsh results
-      #   run: |
-      #     sort -u roblox_company_subs.txt roblox_company_crtsh_domains.txt > roblox_company_final1.txt
-      #     wc -l roblox_company_final1.txt
-      #     git add roblox_company_final1.txt
-      #     git commit -m 'Combine subfinder and crtsh results for Roblox company'
-      #     git push
+      - name: Combine subfinder and crtsh results
+        run: |
+          sort -u tomtom_company_subs.txt tomtom_company_crtsh_domains.txt > tomtom_company_final1.txt
+          wc -l tomtom_company_final1.txt
+          git add tomtom_company_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for TomTom company'
+          git push
 
       - name: Fetch additional sources
         run: |
-          # xargs -a roblox_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          # xargs -a roblox_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          # xargs -a roblox_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
-          # sudo chmod +x *
-          # ./alienvault_hostnamefetcher.sh "roblox.com,rbx.com,guilded.gg" roblox_company_alienvault.txt
-          python3 ./merklemap2subscan.py -d "roblox.com,rbx.com,guilded.gg" -o roblox_company_merkle2.txt -t 5
+          xargs -a tomtom_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a tomtom_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a tomtom_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          sudo chmod +x *
+          ./alienvault_hostnamefetcher.sh "tomtom.com" tomtom_company_alienvault.txt
+          python3 ./merklemap2subscan.py -d "tomtom.com" -o tomtom_company_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          #sort -u subcenter.txt hackertarget.txt roblox_company_alienvault.txt jldc.txt roblox_company_merkle.txt > roblox_company_combined_domains.txt
-          sort -u roblox_company_merkle2.txt roblox_company_final_results.txt > roblox_company_final_results2.txt
-          #wc -l roblox_company_combined_domains.txt
-          git add roblox_company_merkle2.txt roblox_company_final_results2.txt
-          git commit -m 'Combine additional source results for Roblox company'
+          sort -u subcenter.txt hackertarget.txt tomtom_company_alienvault.txt jldc.txt tomtom_company_merkle.txt > tomtom_company_combined_domains.txt
+          wc -l tomtom_company_combined_domains.txt
+          git add tomtom_company_combined_domains.txt tomtom_company_merkle.txt
+          git commit -m 'Combine additional source results for TomTom company'
           git push
 
-      # - name: Download Amazon domains
-      #   run: curl -o amazon_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+      - name: Download Amazon domains
+        run: curl -o amazon_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
 
-      # - name: Download Oracle domains
-      #   run: curl -o oracle_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+      - name: Download Oracle domains
+        run: curl -o oracle_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
 
-      # - name: Download DigitalOcean domains
-      #   run: curl -o digitalocean_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+      - name: Download DigitalOcean domains
+        run: curl -o digitalocean_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
 
-      # - name: Download Google domains
-      #   run: curl -o google_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+      - name: Download Google domains
+        run: curl -o google_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
 
-      # - name: Download Microsoft domains
-      #   run: curl -o microsoft_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+      - name: Download Microsoft domains
+        run: curl -o microsoft_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
 
-      # - name: Concatenate all domains
-      #   run: cat amazon_domains.NAYA.txt oracle_domains.NAYA.txt digitalocean_domains.NAYA.txt google_domains.NAYA.txt microsoft_domains.NAYA.txt > all_domains.NAYA.txt
+      - name: Concatenate all domains
+        run: cat amazon_domains.NAYA.txt oracle_domains.NAYA.txt digitalocean_domains.NAYA.txt google_domains.NAYA.txt microsoft_domains.NAYA.txt > all_domains.NAYA.txt
 
-      # - name: Filter for specific domains and subdomains entries
-      #   run: |
-      #     grep -Eo '\b(\S+\.)?(roblox\.com|rbx\.com|guilded\.gg)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > roblox_company_cloud_domains.txt
-      #     wc -l roblox_company_cloud_domains.txt
+      - name: Filter for specific domains and subdomains entries
+        run: |
+          grep -Eo '\b(\S+\.)?(tomtom\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > tomtom_company_cloud_domains.txt
+          wc -l tomtom_company_cloud_domains.txt
 
-      # - name: Commit and push filtered domains
-      #   run: |
-      #     git config --global user.email "21btrcc007@jainuniversity.ac.in"
-      #     git config --global user.name "ASEEMYASH007"
-      #     git add roblox_company_cloud_domains.txt
-      #     git commit -m "Add processed Roblox company domains"
-      #     git push
+      - name: Commit and push filtered domains
+        run: |
+          git config --global user.email "21btrcc007@jainuniversity.ac.in"
+          git config --global user.name "ASEEMYASH007"
+          git add tomtom_company_cloud_domains.txt
+          git commit -m "Add processed TomTom company domains"
+          git push
 
-      # - name: Combine all results
-      #   run: |
-      #     sort -u roblox_company_final1.txt roblox_company_combined_domains.txt roblox_company_cloud_domains.txt > roblox_company_final_results.txt
-      #     wc -l roblox_company_final_results.txt
-      #     git add roblox_company_final_results.txt
-      #     git commit -m 'Combine all results for Roblox company'
-      #     git push
+      - name: Combine all results
+        run: |
+          sort -u tomtom_company_final1.txt tomtom_company_combined_domains.txt tomtom_company_cloud_domains.txt > tomtom_company_final_results.txt
+          wc -l tomtom_company_final_results.txt
+          git add tomtom_company_final_results.txt
+          git commit -m 'Combine all results for TomTom company'
+          git push
