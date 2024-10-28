@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for HR Block Company
+name: Subdomain Recon Workflow for Wells Fargo Company
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "hrblock.com" > hrblock_company_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL hrblock_company_scope.txt -recursive -o hrblock_company_subs.txt
-          wc -l hrblock_company_subs.txt
-          git add hrblock_company_subs.txt
-          git commit -m 'Add subfinder results for HR Block company'
+          echo -e "wellsfargo.com" > wellsfargo_company_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL wellsfargo_company_scope.txt -recursive -o wellsfargo_company_subs.txt
+          wc -l wellsfargo_company_subs.txt
+          git add wellsfargo_company_subs.txt
+          git commit -m 'Add subfinder results for Wells Fargo company'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "hrblock.com" -r -w >> hrblock_company_crtsh_domains.txt
-          wc -l hrblock_company_crtsh_domains.txt
-          git add hrblock_company_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for HR Block company'
+          python3 ./crtsh.py -d "wellsfargo.com" -r -w >> wellsfargo_company_crtsh_domains.txt
+          wc -l wellsfargo_company_crtsh_domains.txt
+          git add wellsfargo_company_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for Wells Fargo company'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u hrblock_company_subs.txt hrblock_company_crtsh_domains.txt > hrblock_final1.txt
-          wc -l hrblock_final1.txt
-          git add hrblock_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for HR Block company'
+          sort -u wellsfargo_company_subs.txt wellsfargo_company_crtsh_domains.txt > wellsfargo_final1.txt
+          wc -l wellsfargo_final1.txt
+          git add wellsfargo_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for Wells Fargo company'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a hrblock_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a hrblock_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a hrblock_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a wellsfargo_company_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a wellsfargo_company_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a wellsfargo_company_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "hrblock.com" hrblock_company_alienvault.txt
-          python3 ./merklemap2subscan.py -d "hrblock.com" -o hrblock_company_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "wellsfargo.com" wellsfargo_company_alienvault.txt
+          python3 ./merklemap2subscan.py -d "wellsfargo.com" -o wellsfargo_company_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt hrblock_company_alienvault.txt jldc.txt hrblock_company_merkle.txt > hrblock_company_combined_domains.txt
-          wc -l hrblock_company_combined_domains.txt
-          git add hrblock_company_combined_domains.txt hrblock_company_merkle.txt
-          git commit -m 'Combine additional source results for HR Block company'
+          sort -u subcenter.txt hackertarget.txt wellsfargo_company_alienvault.txt jldc.txt wellsfargo_company_merkle.txt > wellsfargo_company_combined_domains.txt
+          wc -l wellsfargo_company_combined_domains.txt
+          git add wellsfargo_company_combined_domains.txt wellsfargo_company_merkle.txt
+          git commit -m 'Combine additional source results for Wells Fargo company'
           git push
 
       - name: Download Amazon domains
@@ -84,42 +84,42 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(hrblock\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > hrblock_company_cloud_domains.txt
-          wc -l hrblock_company_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(wellsfargo\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > wellsfargo_company_cloud_domains.txt
+          wc -l wellsfargo_company_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add hrblock_company_cloud_domains.txt
-          git commit -m "Add processed HR Block company domains"
+          git add wellsfargo_company_cloud_domains.txt
+          git commit -m "Add processed Wells Fargo company domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u hrblock_final1.txt hrblock_company_combined_domains.txt hrblock_company_cloud_domains.txt > hrblock_company_final_results.txt
-          wc -l hrblock_company_final_results.txt
-          git add hrblock_company_final_results.txt
-          git commit -m 'Combine all results for HR Block company'
+          sort -u wellsfargo_final1.txt wellsfargo_company_combined_domains.txt wellsfargo_company_cloud_domains.txt > wellsfargo_company_final_results.txt
+          wc -l wellsfargo_company_final_results.txt
+          git add wellsfargo_company_final_results.txt
+          git commit -m 'Combine all results for Wells Fargo company'
           git push
 
       - name: Clean wildcard domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' hrblock_company_final_results.txt > hrblock_final_results_cleaned.txt
-          wc -l hrblock_final_results_cleaned.txt
-          git add hrblock_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' wellsfargo_company_final_results.txt > wellsfargo_final_results_cleaned.txt
+          wc -l wellsfargo_final_results_cleaned.txt
+          git add wellsfargo_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
 
       - name: Validate DNS records for subdomains
         run: |
-          touch valid_hrblock_subdomains.txt
+          touch valid_wellsfargo_subdomains.txt
           while read -r domain; do
             if host "$domain" &> /dev/null; then
-              echo "$domain" >> valid_hrblock_subdomains.txt
+              echo "$domain" >> valid_wellsfargo_subdomains.txt
             fi
-          done < hrblock_final_results_cleaned.txt
-          wc -l valid_hrblock_subdomains.txt
-          git add valid_hrblock_subdomains.txt
-          git commit -m "Add valid DNS subdomains for HR Block"
+          done < wellsfargo_final_results_cleaned.txt
+          wc -l valid_wellsfargo_subdomains.txt
+          git add valid_wellsfargo_subdomains.txt
+          git commit -m "Add valid DNS subdomains for Wells Fargo"
           git push
