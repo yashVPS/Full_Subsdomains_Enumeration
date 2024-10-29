@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for UK Ministry of Defenses
+name: Subdomain Recon Workflow for apple
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "mod.uk" > mod_uk_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL mod_uk_scope.txt -recursive -o mod_uk_subs.txt
-          wc -l mod_uk_subs.txt
-          git add mod_uk_subs.txt
-          git commit -m 'Add subfinder results for UK Ministry of Defense'
+          echo -e "apple.com\nitunes.com" > apple_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL apple_scope.txt -recursive -o apple_subs.txt
+          wc -l apple_subs.txt
+          git add apple_subs.txt
+          git commit -m 'Add subfinder results for apple'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "mod.uk" -r -w >> mod_uk_crtsh_domains.txt
-          wc -l mod_uk_crtsh_domains.txt
-          git add mod_uk_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for UK Ministry of Defense'
+          python3 ./crtsh.py -d "apple.com,itunes.com" -r -w >> apple_crtsh_domains.txt
+          wc -l apple_crtsh_domains.txt
+          git add apple_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for apple'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u mod_uk_subs.txt mod_uk_crtsh_domains.txt > mod_uk_final1.txt
-          wc -l mod_uk_final1.txt
-          git add mod_uk_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for UK Ministry of Defense'
+          sort -u apple_subs.txt apple_crtsh_domains.txt > apple_final1.txt
+          wc -l apple_final1.txt
+          git add apple_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for apple'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a mod_uk_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a mod_uk_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a mod_uk_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a apple_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a apple_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a apple_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "mod.uk" mod_uk_alienvault.txt
-          python3 ./merklemap2subscan.py -d "mod.uk" -o mod_uk_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "apple.com,itunes.com" apple_alienvault.txt
+          python3 ./merklemap2subscan.py -d "apple.com,itunes.com" -o apple_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt mod_uk_alienvault.txt jldc.txt mod_uk_merkle.txt > mod_uk_combined_domains.txt
-          wc -l mod_uk_combined_domains.txt
-          git add mod_uk_combined_domains.txt mod_uk_merkle.txt
-          git commit -m 'Combine additional source results for UK Ministry of Defense'
+          sort -u subcenter.txt hackertarget.txt apple_alienvault.txt jldc.txt apple_merkle.txt > apple_combined_domains.txt
+          wc -l apple_combined_domains.txt
+          git add apple_combined_domains.txt apple_merkle.txt
+          git commit -m 'Combine additional source results for apple'
           git push
 
       - name: Download Amazon domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(mod\.uk)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > mod_uk_cloud_domains.txt
-          wc -l mod_uk_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(apple\.com|itunes\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > apple_cloud_domains.txt
+          wc -l apple_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add mod_uk_cloud_domains.txt
-          git commit -m "Add processed UK Ministry of Defense domains"
+          git add apple_cloud_domains.txt
+          git commit -m "Add processed apple domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u mod_uk_final1.txt mod_uk_combined_domains.txt mod_uk_cloud_domains.txt > mod_uk_final_results.txt
-          wc -l mod_uk_final_results.txt
-          git add mod_uk_final_results.txt
-          git commit -m 'Combine all results for UK Ministry of Defense'
+          sort -u apple_final1.txt apple_combined_domains.txt apple_cloud_domains.txt > apple_final_results.txt
+          wc -l apple_final_results.txt
+          git add apple_final_results.txt
+          git commit -m 'Combine all results for apple'
           git push
 
       - name: Clean wildcard domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' mod_uk_final_results.txt > mod_uk_final_results_cleaned.txt
-          wc -l mod_uk_final_results_cleaned.txt
-          git add mod_uk_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' apple_final_results.txt > apple_final_results_cleaned.txt
+          wc -l apple_final_results_cleaned.txt
+          git add apple_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
