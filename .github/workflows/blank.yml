@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for UK Ministry of Defense
+name: Subdomain Recon Workflow for UK Ministry of Defenses
 
 on: [push]
 
