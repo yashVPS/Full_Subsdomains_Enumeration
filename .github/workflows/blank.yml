@@ -18,8 +18,8 @@ jobs:
         run: |
           mkdir -p /home/runner/configz/subfinder
           cp provider-config.yaml /home/runner/configz/subfinder
-          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip
-          unzip subfinder_2.6.6_linux_amd64.zip
+          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
+          unzip subfinder_2.6.7_linux_amd64.zip
           sudo chmod +x *
 
       - name: Run subfinder
