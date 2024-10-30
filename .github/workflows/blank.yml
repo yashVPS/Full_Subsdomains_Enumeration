@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for apple
+name: Subdomain Recon Workflow for coindcx
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run subfinder
         run: |
-          echo -e "apple.com\nitunes.com" > apple_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL apple_scope.txt -recursive -o apple_subs.txt
-          wc -l apple_subs.txt
-          git add apple_subs.txt
-          git commit -m 'Add subfinder results for apple'
+          echo -e "coindcx.com\ndcxlearn.com" > coindcx_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL coindcx_scope.txt -recursive -o coindcx_subs.txt
+          wc -l coindcx_subs.txt
+          git add coindcx_subs.txt
+          git commit -m 'Add subfinder results for coindcx'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "apple.com,itunes.com" -r -w >> apple_crtsh_domains.txt
-          wc -l apple_crtsh_domains.txt
-          git add apple_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for apple'
+          python3 ./crtsh.py -d "coindcx.com,dcxlearn.com" -r -w >> coindcx_crtsh_domains.txt
+          wc -l coindcx_crtsh_domains.txt
+          git add coindcx_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for coindcx'
           git push
 
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u apple_subs.txt apple_crtsh_domains.txt > apple_final1.txt
-          wc -l apple_final1.txt
-          git add apple_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for apple'
+          sort -u coindcx_subs.txt coindcx_crtsh_domains.txt > coindcx_final1.txt
+          wc -l coindcx_final1.txt
+          git add coindcx_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for coindcx'
           git push
 
       - name: Fetch additional sources
         run: |
-          xargs -a apple_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a apple_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a apple_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a coindcx_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a coindcx_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a coindcx_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "apple.com,itunes.com" apple_alienvault.txt
-          python3 ./merklemap2subscan.py -d "apple.com,itunes.com" -o apple_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "coindcx.com,dcxlearn.com" coindcx_alienvault.txt
+          python3 ./merklemap2subscan.py -d "coindcx.com,dcxlearn.com" -o coindcx_merkle.txt -t 5
 
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt apple_alienvault.txt jldc.txt apple_merkle.txt > apple_combined_domains.txt
-          wc -l apple_combined_domains.txt
-          git add apple_combined_domains.txt apple_merkle.txt
-          git commit -m 'Combine additional source results for apple'
+          sort -u subcenter.txt hackertarget.txt coindcx_alienvault.txt jldc.txt coindcx_merkle.txt > coindcx_combined_domains.txt
+          wc -l coindcx_combined_domains.txt
+          git add coindcx_combined_domains.txt coindcx_merkle.txt
+          git commit -m 'Combine additional source results for coindcx'
           git push
 
       - name: Download Amazon domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(apple\.com|itunes\.com)\b' all_domains.NAYA.txt | sed 's/\[//g' | sed 's/\]//g' | tr ' ' '\n' > apple_cloud_domains.txt
-          wc -l apple_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(coindcx\.com|dcxlearn\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > coindcx_cloud_domains.txt
+          wc -l coindcx_cloud_domains.txt
 
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add apple_cloud_domains.txt
-          git commit -m "Add processed apple domains"
+          git add coindcx_cloud_domains.txt
+          git commit -m "Add processed coindcx domains"
           git push
 
       - name: Combine all results
         run: |
-          sort -u apple_final1.txt apple_combined_domains.txt apple_cloud_domains.txt > apple_final_results.txt
-          wc -l apple_final_results.txt
-          git add apple_final_results.txt
-          git commit -m 'Combine all results for apple'
+          sort -u coindcx_final1.txt coindcx_combined_domains.txt coindcx_cloud_domains.txt > coindcx_final_results.txt
+          wc -l coindcx_final_results.txt
+          git add coindcx_final_results.txt
+          git commit -m 'Combine all results for coindcx'
           git push
 
       - name: Clean wildcard domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' apple_final_results.txt > apple_final_results_cleaned.txt
-          wc -l apple_final_results_cleaned.txt
-          git add apple_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' coindcx_final_results.txt > coindcx_final_results_cleaned.txt
+          wc -l coindcx_final_results_cleaned.txt
+          git add coindcx_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
