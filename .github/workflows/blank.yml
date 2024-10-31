@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for VRBO
+name: Subdomain Recon Workflow for Capital One
 
 on: [push]
 
@@ -13,90 +13,100 @@ jobs:
         run: |
           git config --global user.name "ASEEMYASH007"
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
+      
       - name: Download Subfinder
         run: |
           mkdir -p /home/runner/configz/subfinder
           cp provider-config.yaml /home/runner/configz/subfinder
           wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
           unzip subfinder_2.6.7_linux_amd64.zip
-          sudo chmod +x *
-      - name: Run subfinder
+          sudo chmod +x subfinder
+
+      - name: Run Subfinder
         run: |
-          echo -e "vrbo.com\nhotwire.com\ncarrentals.com\nwotif.com\ncheaptickets.com\nlastminute.co.nz\nlastminute.com.au\ntravelocity.com\ntravelocity.ca\nexpediacruises.com\nexpediapartnercentral.com" > vrbo_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL vrbo_scope.txt -recursive -o vrbo_subs.txt
-          wc -l vrbo_subs.txt
-          git add vrbo_subs.txt
-          git commit -m 'Add subfinder results for VRBO'
+          echo -e "capitalone.com\ncapitaloneshopping.com\ncapitalonegslbex.com\ncapitalone.ca" > capitalone_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL capitalone_scope.txt -recursive -o capitalone_subs.txt
+          wc -l capitalone_subs.txt
+          git add capitalone_subs.txt
+          git commit -m 'Add Subfinder results for Capital One'
           git push
+
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "vrbo.com,hotwire.com,carrentals.com,wotif.com,cheaptickets.com,lastminute.co.nz,lastminute.com.au,travelocity.com,travelocity.ca,expediacruises.com,expediapartnercentral.com" -r -w >> vrbo_crtsh_domains.txt
-          wc -l vrbo_crtsh_domains.txt
-          git add vrbo_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for VRBO'
+          python3 ./crtsh.py -d "capitalone.com,capitaloneshopping.com,capitalonegslbex.com,capitalone.ca" -r -w >> capitalone_crtsh_domains.txt
+          wc -l capitalone_crtsh_domains.txt
+          git add capitalone_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for Capital One'
           git push
-      - name: Combine subfinder and crtsh results
+
+      - name: Combine Subfinder and crtsh results
         run: |
-          sort -u vrbo_subs.txt vrbo_crtsh_domains.txt > vrbo_final1.txt
-          wc -l vrbo_final1.txt
-          git add vrbo_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for VRBO'
+          sort -u capitalone_subs.txt capitalone_crtsh_domains.txt > capitalone_final1.txt
+          wc -l capitalone_final1.txt
+          git add capitalone_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for Capital One'
           git push
-      - name: Fetch additional sources
+
+      - name: Fetch Additional Sources
         run: |
-          xargs -a vrbo_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a vrbo_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a vrbo_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a capitalone_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a capitalone_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a capitalone_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "vrbo.com,hotwire.com,carrentals.com,wotif.com,cheaptickets.com,lastminute.co.nz,lastminute.com.au,travelocity.com,travelocity.ca,expediacruises.com,expediapartnercentral.com" vrbo_alienvault.txt
-          python3 ./merklemap2subscan.py -d "vrbo.com,hotwire.com,carrentals.com,wotif.com,cheaptickets.com,lastminute.co.nz,lastminute.com.au,travelocity.com,travelocity.ca,expediacruises.com,expediapartnercentral.com" -o vrbo_merkle.txt -t 5
-      - name: Combine additional source results
+          ./alienvault_hostnamefetcher.sh "capitalone.com,capitaloneshopping.com,capitalonegslbex.com,capitalone.ca" capitalone_alienvault.txt
+          python3 ./merklemap2subscan.py -d "capitalone.com,capitaloneshopping.com,capitalonegslbex.com,capitalone.ca" -o capitalone_merkle.txt -t 5
+
+      - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt vrbo_alienvault.txt jldc.txt vrbo_merkle.txt > vrbo_combined_domains.txt
-          wc -l vrbo_combined_domains.txt
-          git add vrbo_combined_domains.txt vrbo_merkle.txt
-          git commit -m 'Combine additional source results for VRBO'
+          sort -u subcenter.txt hackertarget.txt capitalone_alienvault.txt jldc.txt capitalone_merkle.txt > capitalone_combined_domains.txt
+          wc -l capitalone_combined_domains.txt
+          git add capitalone_combined_domains.txt capitalone_merkle.txt
+          git commit -m 'Combine additional source results for Capital One'
           git push
-      - name: Download Amazon domains
+
+      - name: Download Amazon Domains
         run: curl -o amazon_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
 
-      - name: Download Oracle domains
+      - name: Download Oracle Domains
         run: curl -o oracle_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
 
-      - name: Download DigitalOcean domains
+      - name: Download DigitalOcean Domains
         run: curl -o digitalocean_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
 
-      - name: Download Google domains
+      - name: Download Google Domains
         run: curl -o google_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
 
-      - name: Download Microsoft domains
+      - name: Download Microsoft Domains
         run: curl -o microsoft_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
 
-      - name: Concatenate all domains
+      - name: Concatenate All Domains
         run: cat amazon_domains.NAYA.txt oracle_domains.NAYA.txt digitalocean_domains.NAYA.txt google_domains.NAYA.txt microsoft_domains.NAYA.txt > all_domains.NAYA.txt
 
-      - name: Filter for specific domains and subdomains entries
+      - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(vrbo\.com|hotwire\.com|carrentals\.com|wotif\.com|cheaptickets\.com|lastminute\.co\.nz|lastminute\.com\.au|travelocity\.com|travelocity\.ca|expediacruises\.com|expediapartnercentral\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > vrbo_cloud_domains.txt
-          wc -l vrbo_cloud_domains.txt
-      - name: Commit and push filtered domains
+          grep -Eo '\b(\S+\.)?(capitalone\.com|capitaloneshopping\.com|capitalonegslbex\.com|capitalone\.ca)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > capitalone_cloud_domains.txt
+          wc -l capitalone_cloud_domains.txt
+
+      - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add vrbo_cloud_domains.txt
-          git commit -m "Add processed VRBO domains"
+          git add capitalone_cloud_domains.txt
+          git commit -m "Add processed Capital One domains"
           git push
-      - name: Combine all results
+
+      - name: Combine All Results
         run: |
-          sort -u vrbo_final1.txt vrbo_combined_domains.txt vrbo_cloud_domains.txt > vrbo_final_results.txt
-          wc -l vrbo_final_results.txt
-          git add vrbo_final_results.txt
-          git commit -m 'Combine all results for VRBO'
+          sort -u capitalone_final1.txt capitalone_combined_domains.txt capitalone_cloud_domains.txt > capitalone_final_results.txt
+          wc -l capitalone_final_results.txt
+          git add capitalone_final_results.txt
+          git commit -m 'Combine all results for Capital One'
           git push
-      - name: Clean wildcard domains
+
+      - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' vrbo_final_results.txt > vrbo_final_results_cleaned.txt
-          wc -l vrbo_final_results_cleaned.txt
-          git add vrbo_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' capitalone_final_results.txt > capitalone_final_results_cleaned.txt
+          wc -l capitalone_final_results_cleaned.txt
+          git add capitalone_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
