@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for metamask
+name: Subdomain Recon Workflow for VRBO
 
 on: [push]
 
@@ -13,7 +13,6 @@ jobs:
         run: |
           git config --global user.name "ASEEMYASH007"
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
-
       - name: Download Subfinder
         run: |
           mkdir -p /home/runner/configz/subfinder
@@ -21,49 +20,43 @@ jobs:
           wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
           unzip subfinder_2.6.7_linux_amd64.zip
           sudo chmod +x *
-
       - name: Run subfinder
         run: |
-          echo -e "metamask.io" > metamask_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL metamask_scope.txt -recursive -o metamask_subs.txt
-          wc -l metamask_subs.txt
-          git add metamask_subs.txt
-          git commit -m 'Add subfinder results for metamask'
+          echo -e "vrbo.com\nhotwire.com\ncarrentals.com\nwotif.com\ncheaptickets.com\nlastminute.co.nz\nlastminute.com.au\ntravelocity.com\ntravelocity.ca\nexpediacruises.com\nexpediapartnercentral.com" > vrbo_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL vrbo_scope.txt -recursive -o vrbo_subs.txt
+          wc -l vrbo_subs.txt
+          git add vrbo_subs.txt
+          git commit -m 'Add subfinder results for VRBO'
           git push
-
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "metamask.io" -r -w >> metamask_crtsh_domains.txt
-          wc -l metamask_crtsh_domains.txt
-          git add metamask_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for metamask'
+          python3 ./crtsh.py -d "vrbo.com,hotwire.com,carrentals.com,wotif.com,cheaptickets.com,lastminute.co.nz,lastminute.com.au,travelocity.com,travelocity.ca,expediacruises.com,expediapartnercentral.com" -r -w >> vrbo_crtsh_domains.txt
+          wc -l vrbo_crtsh_domains.txt
+          git add vrbo_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for VRBO'
           git push
-
       - name: Combine subfinder and crtsh results
         run: |
-          sort -u metamask_subs.txt metamask_crtsh_domains.txt > metamask_final1.txt
-          wc -l metamask_final1.txt
-          git add metamask_final1.txt
-          git commit -m 'Combine subfinder and crtsh results for metamask'
+          sort -u vrbo_subs.txt vrbo_crtsh_domains.txt > vrbo_final1.txt
+          wc -l vrbo_final1.txt
+          git add vrbo_final1.txt
+          git commit -m 'Combine subfinder and crtsh results for VRBO'
           git push
-
       - name: Fetch additional sources
         run: |
-          xargs -a metamask_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a metamask_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a metamask_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a vrbo_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a vrbo_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a vrbo_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "metamask.io" metamask_alienvault.txt
-          python3 ./merklemap2subscan.py -d "metamask.io" -o metamask_merkle.txt -t 5
-
+          ./alienvault_hostnamefetcher.sh "vrbo.com,hotwire.com,carrentals.com,wotif.com,cheaptickets.com,lastminute.co.nz,lastminute.com.au,travelocity.com,travelocity.ca,expediacruises.com,expediapartnercentral.com" vrbo_alienvault.txt
+          python3 ./merklemap2subscan.py -d "vrbo.com,hotwire.com,carrentals.com,wotif.com,cheaptickets.com,lastminute.co.nz,lastminute.com.au,travelocity.com,travelocity.ca,expediacruises.com,expediapartnercentral.com" -o vrbo_merkle.txt -t 5
       - name: Combine additional source results
         run: |
-          sort -u subcenter.txt hackertarget.txt metamask_alienvault.txt jldc.txt metamask_merkle.txt > metamask_combined_domains.txt
-          wc -l metamask_combined_domains.txt
-          git add metamask_combined_domains.txt metamask_merkle.txt
-          git commit -m 'Combine additional source results for metamask'
+          sort -u subcenter.txt hackertarget.txt vrbo_alienvault.txt jldc.txt vrbo_merkle.txt > vrbo_combined_domains.txt
+          wc -l vrbo_combined_domains.txt
+          git add vrbo_combined_domains.txt vrbo_merkle.txt
+          git commit -m 'Combine additional source results for VRBO'
           git push
-
       - name: Download Amazon domains
         run: curl -o amazon_domains.NAYA.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
 
@@ -84,29 +77,26 @@ jobs:
 
       - name: Filter for specific domains and subdomains entries
         run: |
-          grep -Eo '\b(\S+\.)?(metamask\.io)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > metamask_cloud_domains.txt
-          wc -l metamask_cloud_domains.txt
-
+          grep -Eo '\b(\S+\.)?(vrbo\.com|hotwire\.com|carrentals\.com|wotif\.com|cheaptickets\.com|lastminute\.co\.nz|lastminute\.com\.au|travelocity\.com|travelocity\.ca|expediacruises\.com|expediapartnercentral\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > vrbo_cloud_domains.txt
+          wc -l vrbo_cloud_domains.txt
       - name: Commit and push filtered domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add metamask_cloud_domains.txt
-          git commit -m "Add processed metamask domains"
+          git add vrbo_cloud_domains.txt
+          git commit -m "Add processed VRBO domains"
           git push
-
       - name: Combine all results
         run: |
-          sort -u metamask_final1.txt metamask_combined_domains.txt metamask_cloud_domains.txt > metamask_final_results.txt
-          wc -l metamask_final_results.txt
-          git add metamask_final_results.txt
-          git commit -m 'Combine all results for metamask'
+          sort -u vrbo_final1.txt vrbo_combined_domains.txt vrbo_cloud_domains.txt > vrbo_final_results.txt
+          wc -l vrbo_final_results.txt
+          git add vrbo_final_results.txt
+          git commit -m 'Combine all results for VRBO'
           git push
-
       - name: Clean wildcard domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' metamask_final_results.txt > metamask_final_results_cleaned.txt
-          wc -l metamask_final_results_cleaned.txt
-          git add metamask_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' vrbo_final_results.txt > vrbo_final_results_cleaned.txt
+          wc -l vrbo_final_results_cleaned.txt
+          git add vrbo_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
