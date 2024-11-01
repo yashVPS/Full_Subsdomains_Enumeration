@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for Capital One
+name: Subdomain Recon Workflow for KHealth
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "capitalone.com\ncapitaloneshopping.com\ncapitalonegslbex.com\ncapitalone.ca" > capitalone_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL capitalone_scope.txt -recursive -o capitalone_subs.txt
-          wc -l capitalone_subs.txt
-          git add capitalone_subs.txt
-          git commit -m 'Add Subfinder results for Capital One'
+          echo -e "khealth.us\nkhealth.io\nkhealth.com" > khealth_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL khealth_scope.txt -recursive -o khealth_subs.txt
+          wc -l khealth_subs.txt
+          git add khealth_subs.txt
+          git commit -m 'Add Subfinder results for KHealth'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "capitalone.com,capitaloneshopping.com,capitalonegslbex.com,capitalone.ca" -r -w >> capitalone_crtsh_domains.txt
-          wc -l capitalone_crtsh_domains.txt
-          git add capitalone_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for Capital One'
+          python3 ./crtsh.py -d "khealth.us,khealth.io,khealth.com" -r -w >> khealth_crtsh_domains.txt
+          wc -l khealth_crtsh_domains.txt
+          git add khealth_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for KHealth'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u capitalone_subs.txt capitalone_crtsh_domains.txt > capitalone_final1.txt
-          wc -l capitalone_final1.txt
-          git add capitalone_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for Capital One'
+          sort -u khealth_subs.txt khealth_crtsh_domains.txt > khealth_final1.txt
+          wc -l khealth_final1.txt
+          git add khealth_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for KHealth'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a capitalone_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a capitalone_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a capitalone_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a khealth_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a khealth_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a khealth_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "capitalone.com,capitaloneshopping.com,capitalonegslbex.com,capitalone.ca" capitalone_alienvault.txt
-          python3 ./merklemap2subscan.py -d "capitalone.com,capitaloneshopping.com,capitalonegslbex.com,capitalone.ca" -o capitalone_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "khealth.us,khealth.io,khealth.com" khealth_alienvault.txt
+          python3 ./merklemap2subscan.py -d "khealth.us,khealth.io,khealth.com" -o khealth_merkle.txt -t 5
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt capitalone_alienvault.txt jldc.txt capitalone_merkle.txt > capitalone_combined_domains.txt
-          wc -l capitalone_combined_domains.txt
-          git add capitalone_combined_domains.txt capitalone_merkle.txt
-          git commit -m 'Combine additional source results for Capital One'
+          sort -u subcenter.txt hackertarget.txt khealth_alienvault.txt jldc.txt khealth_merkle.txt > khealth_combined_domains.txt
+          wc -l khealth_combined_domains.txt
+          git add khealth_combined_domains.txt khealth_merkle.txt
+          git commit -m 'Combine additional source results for KHealth'
           git push
 
       - name: Download Amazon Domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(capitalone\.com|capitaloneshopping\.com|capitalonegslbex\.com|capitalone\.ca)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > capitalone_cloud_domains.txt
-          wc -l capitalone_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(khealth\.us|khealth\.io|khealth\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > khealth_cloud_domains.txt
+          wc -l khealth_cloud_domains.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add capitalone_cloud_domains.txt
-          git commit -m "Add processed Capital One domains"
+          git add khealth_cloud_domains.txt
+          git commit -m "Add processed KHealth domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u capitalone_final1.txt capitalone_combined_domains.txt capitalone_cloud_domains.txt > capitalone_final_results.txt
-          wc -l capitalone_final_results.txt
-          git add capitalone_final_results.txt
-          git commit -m 'Combine all results for Capital One'
+          sort -u khealth_final1.txt khealth_combined_domains.txt khealth_cloud_domains.txt > khealth_final_results.txt
+          wc -l khealth_final_results.txt
+          git add khealth_final_results.txt
+          git commit -m 'Combine all results for KHealth'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' capitalone_final_results.txt > capitalone_final_results_cleaned.txt
-          wc -l capitalone_final_results_cleaned.txt
-          git add capitalone_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' khealth_final_results.txt > khealth_final_results_cleaned.txt
+          wc -l khealth_final_results_cleaned.txt
+          git add khealth_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
