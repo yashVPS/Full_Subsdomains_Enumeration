@@ -1,0 +1,3 @@
+gdpr.khealth.io
+khealth.io
+khealth.us
