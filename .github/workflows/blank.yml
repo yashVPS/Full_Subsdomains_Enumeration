@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for KHealth
+name: Subdomain Recon Workflow for Adevinta
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "khealth.us\nkhealth.io\nkhealth.com" > khealth_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL khealth_scope.txt -recursive -o khealth_subs.txt
-          wc -l khealth_subs.txt
-          git add khealth_subs.txt
-          git commit -m 'Add Subfinder results for KHealth'
+          echo -e "coches.net\nadevinta.com\nkijiji.ca\ninfojobs.net\n2dehands.be\nfotocasa.es\nkleinanzeigen.de\nmarktplaats.nl\nmilanuncios.com\nmobile.de\nsubito.it\n2ememain.be\nnostromo.epreselec.com\nautomobile.it\nkijijiautos.ca" > adevinta_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL adevinta_scope.txt -recursive -o adevinta_subs.txt
+          wc -l adevinta_subs.txt
+          git add adevinta_subs.txt
+          git commit -m 'Add Subfinder results for Adevinta'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "khealth.us,khealth.io,khealth.com" -r -w >> khealth_crtsh_domains.txt
-          wc -l khealth_crtsh_domains.txt
-          git add khealth_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for KHealth'
+          python3 ./crtsh.py -d "coches.net,adevinta.com,kijiji.ca,infojobs.net,2dehands.be,fotocasa.es,kleinanzeigen.de,marktplaats.nl,milanuncios.com,mobile.de,subito.it,2ememain.be,nostromo.epreselec.com,automobile.it,kijijiautos.ca" -r -w >> adevinta_crtsh_domains.txt
+          wc -l adevinta_crtsh_domains.txt
+          git add adevinta_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for Adevinta'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u khealth_subs.txt khealth_crtsh_domains.txt > khealth_final1.txt
-          wc -l khealth_final1.txt
-          git add khealth_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for KHealth'
+          sort -u adevinta_subs.txt adevinta_crtsh_domains.txt > adevinta_final1.txt
+          wc -l adevinta_final1.txt
+          git add adevinta_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for Adevinta'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a khealth_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a khealth_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a khealth_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a adevinta_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a adevinta_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a adevinta_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "khealth.us,khealth.io,khealth.com" khealth_alienvault.txt
-          python3 ./merklemap2subscan.py -d "khealth.us,khealth.io,khealth.com" -o khealth_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "coches.net,adevinta.com,kijiji.ca,infojobs.net,2dehands.be,fotocasa.es,kleinanzeigen.de,marktplaats.nl,milanuncios.com,mobile.de,subito.it,2ememain.be,nostromo.epreselec.com,automobile.it,kijijiautos.ca" adevinta_alienvault.txt
+          python3 ./merklemap2subscan.py -d "coches.net,adevinta.com,kijiji.ca,infojobs.net,2dehands.be,fotocasa.es,kleinanzeigen.de,marktplaats.nl,milanuncios.com,mobile.de,subito.it,2ememain.be,nostromo.epreselec.com,automobile.it,kijijiautos.ca" -o adevinta_merkle.txt -t 5
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt khealth_alienvault.txt jldc.txt khealth_merkle.txt > khealth_combined_domains.txt
-          wc -l khealth_combined_domains.txt
-          git add khealth_combined_domains.txt khealth_merkle.txt
-          git commit -m 'Combine additional source results for KHealth'
+          sort -u subcenter.txt hackertarget.txt adevinta_alienvault.txt jldc.txt adevinta_merkle.txt > adevinta_combined_domains.txt
+          wc -l adevinta_combined_domains.txt
+          git add adevinta_combined_domains.txt adevinta_merkle.txt
+          git commit -m 'Combine additional source results for Adevinta'
           git push
 
       - name: Download Amazon Domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(khealth\.us|khealth\.io|khealth\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > khealth_cloud_domains.txt
-          wc -l khealth_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(coches\.net|adevinta\.com|kijiji\.ca|infojobs\.net|2dehands\.be|fotocasa\.es|kleinanzeigen\.de|marktplaats\.nl|milanuncios\.com|mobile\.de|subito\.it|2ememain\.be|nostromo\.epreselec\.com|automobile\.it|kijijiautos\.ca)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > adevinta_cloud_domains.txt
+          wc -l adevinta_cloud_domains.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add khealth_cloud_domains.txt
-          git commit -m "Add processed KHealth domains"
+          git add adevinta_cloud_domains.txt
+          git commit -m "Add processed Adevinta domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u khealth_final1.txt khealth_combined_domains.txt khealth_cloud_domains.txt > khealth_final_results.txt
-          wc -l khealth_final_results.txt
-          git add khealth_final_results.txt
-          git commit -m 'Combine all results for KHealth'
+          sort -u adevinta_final1.txt adevinta_combined_domains.txt adevinta_cloud_domains.txt > adevinta_final_results.txt
+          wc -l adevinta_final_results.txt
+          git add adevinta_final_results.txt
+          git commit -m 'Combine all results for Adevinta'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' khealth_final_results.txt > khealth_final_results_cleaned.txt
-          wc -l khealth_final_results_cleaned.txt
-          git add khealth_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' adevinta_final_results.txt > adevinta_final_results_cleaned.txt
+          wc -l adevinta_final_results_cleaned.txt
+          git add adevinta_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
