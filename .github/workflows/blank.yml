@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for IAC
+name: Subdomain Recon Workflow for minafundation
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "iac.com" > iac_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL iac_scope.txt -recursive -o iac_subs.txt
-          wc -l iac_subs.txt
-          git add iac_subs.txt
-          git commit -m 'Add Subfinder results for IAC'
+          echo -e "minaprotocol.com" > minafundation_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL minafundation_scope.txt -recursive -o minafundation_subs.txt
+          wc -l minafundation_subs.txt
+          git add minafundation_subs.txt
+          git commit -m 'Add Subfinder results for minafundation'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "iac.com" -r -w >> iac_crtsh_domains.txt
-          wc -l iac_crtsh_domains.txt
-          git add iac_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for IAC'
+          python3 ./crtsh.py -d "minaprotocol.com" -r -w >> minafundation_crtsh_domains.txt
+          wc -l minafundation_crtsh_domains.txt
+          git add minafundation_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for minafundation'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u iac_subs.txt iac_crtsh_domains.txt > iac_final1.txt
-          wc -l iac_final1.txt
-          git add iac_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for IAC'
+          sort -u minafundation_subs.txt minafundation_crtsh_domains.txt > minafundation_final1.txt
+          wc -l minafundation_final1.txt
+          git add minafundation_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for minafundation'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a iac_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a iac_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a iac_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a minafundation_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a minafundation_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a minafundation_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "iac.com" iac_alienvault.txt
-          python3 ./merklemap2subscan.py -d "iac.com" -o iac_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "minaprotocol.com" minafundation_alienvault.txt
+          python3 ./merklemap2subscan.py -d minaprotocol.com -o minafundation_merkle.txt -t 5 -s
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt iac_alienvault.txt jldc.txt iac_merkle.txt > iac_combined_domains.txt
-          wc -l iac_combined_domains.txt
-          git add iac_combined_domains.txt iac_merkle.txt
-          git commit -m 'Combine additional source results for IAC'
+          sort -u subcenter.txt hackertarget.txt minafundation_alienvault.txt jldc.txt minafundation_merkle.txt > minafundation_combined_domains.txt
+          wc -l minafundation_combined_domains.txt
+          git add minafundation_combined_domains.txt minafundation_merkle.txt
+          git commit -m 'Combine additional source results for minafundation'
           git push
 
       - name: Download Amazon Domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(iac\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > iac_cloud_domains.txt
-          wc -l iac_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(minaprotocol\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > minafundation_cloud_domains.txt
+          wc -l minafundation_cloud_domains.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add iac_cloud_domains.txt
-          git commit -m "Add processed IAC domains"
+          git add minafundation_cloud_domains.txt
+          git commit -m "Add processed minafundation domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u iac_final1.txt iac_combined_domains.txt iac_cloud_domains.txt > iac_final_results.txt
-          wc -l iac_final_results.txt
-          git add iac_final_results.txt
-          git commit -m 'Combine all results for IAC'
+          sort -u minafundation_final1.txt minafundation_combined_domains.txt minafundation_cloud_domains.txt > minafundation_final_results.txt
+          wc -l minafundation_final_results.txt
+          git add minafundation_final_results.txt
+          git commit -m 'Combine all results for minafundation'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' iac_final_results.txt > iac_final_results_cleaned.txt
-          wc -l iac_final_results_cleaned.txt
-          git add iac_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' minafundation_final_results.txt > minafundation_final_results_cleaned.txt
+          wc -l minafundation_final_results_cleaned.txt
+          git add minafundation_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
