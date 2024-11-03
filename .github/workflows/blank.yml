@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for Adevinta
+name: Subdomain Recon Workflow for IAC
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "coches.net\nadevinta.com\nkijiji.ca\ninfojobs.net\n2dehands.be\nfotocasa.es\nkleinanzeigen.de\nmarktplaats.nl\nmilanuncios.com\nmobile.de\nsubito.it\n2ememain.be\nnostromo.epreselec.com\nautomobile.it\nkijijiautos.ca" > adevinta_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL adevinta_scope.txt -recursive -o adevinta_subs.txt
-          wc -l adevinta_subs.txt
-          git add adevinta_subs.txt
-          git commit -m 'Add Subfinder results for Adevinta'
+          echo -e "iac.com" > iac_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL iac_scope.txt -recursive -o iac_subs.txt
+          wc -l iac_subs.txt
+          git add iac_subs.txt
+          git commit -m 'Add Subfinder results for IAC'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "coches.net,adevinta.com,kijiji.ca,infojobs.net,2dehands.be,fotocasa.es,kleinanzeigen.de,marktplaats.nl,milanuncios.com,mobile.de,subito.it,2ememain.be,nostromo.epreselec.com,automobile.it,kijijiautos.ca" -r -w >> adevinta_crtsh_domains.txt
-          wc -l adevinta_crtsh_domains.txt
-          git add adevinta_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for Adevinta'
+          python3 ./crtsh.py -d "iac.com" -r -w >> iac_crtsh_domains.txt
+          wc -l iac_crtsh_domains.txt
+          git add iac_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for IAC'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u adevinta_subs.txt adevinta_crtsh_domains.txt > adevinta_final1.txt
-          wc -l adevinta_final1.txt
-          git add adevinta_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for Adevinta'
+          sort -u iac_subs.txt iac_crtsh_domains.txt > iac_final1.txt
+          wc -l iac_final1.txt
+          git add iac_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for IAC'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a adevinta_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a adevinta_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a adevinta_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a iac_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a iac_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a iac_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "coches.net,adevinta.com,kijiji.ca,infojobs.net,2dehands.be,fotocasa.es,kleinanzeigen.de,marktplaats.nl,milanuncios.com,mobile.de,subito.it,2ememain.be,nostromo.epreselec.com,automobile.it,kijijiautos.ca" adevinta_alienvault.txt
-          python3 ./merklemap2subscan.py -d "coches.net,adevinta.com,kijiji.ca,infojobs.net,2dehands.be,fotocasa.es,kleinanzeigen.de,marktplaats.nl,milanuncios.com,mobile.de,subito.it,2ememain.be,nostromo.epreselec.com,automobile.it,kijijiautos.ca" -o adevinta_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "iac.com" iac_alienvault.txt
+          python3 ./merklemap2subscan.py -d "iac.com" -o iac_merkle.txt -t 5
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt adevinta_alienvault.txt jldc.txt adevinta_merkle.txt > adevinta_combined_domains.txt
-          wc -l adevinta_combined_domains.txt
-          git add adevinta_combined_domains.txt adevinta_merkle.txt
-          git commit -m 'Combine additional source results for Adevinta'
+          sort -u subcenter.txt hackertarget.txt iac_alienvault.txt jldc.txt iac_merkle.txt > iac_combined_domains.txt
+          wc -l iac_combined_domains.txt
+          git add iac_combined_domains.txt iac_merkle.txt
+          git commit -m 'Combine additional source results for IAC'
           git push
 
       - name: Download Amazon Domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(coches\.net|adevinta\.com|kijiji\.ca|infojobs\.net|2dehands\.be|fotocasa\.es|kleinanzeigen\.de|marktplaats\.nl|milanuncios\.com|mobile\.de|subito\.it|2ememain\.be|nostromo\.epreselec\.com|automobile\.it|kijijiautos\.ca)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > adevinta_cloud_domains.txt
-          wc -l adevinta_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(iac\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > iac_cloud_domains.txt
+          wc -l iac_cloud_domains.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add adevinta_cloud_domains.txt
-          git commit -m "Add processed Adevinta domains"
+          git add iac_cloud_domains.txt
+          git commit -m "Add processed IAC domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u adevinta_final1.txt adevinta_combined_domains.txt adevinta_cloud_domains.txt > adevinta_final_results.txt
-          wc -l adevinta_final_results.txt
-          git add adevinta_final_results.txt
-          git commit -m 'Combine all results for Adevinta'
+          sort -u iac_final1.txt iac_combined_domains.txt iac_cloud_domains.txt > iac_final_results.txt
+          wc -l iac_final_results.txt
+          git add iac_final_results.txt
+          git commit -m 'Combine all results for IAC'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' adevinta_final_results.txt > adevinta_final_results_cleaned.txt
-          wc -l adevinta_final_results_cleaned.txt
-          git add adevinta_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' iac_final_results.txt > iac_final_results_cleaned.txt
+          wc -l iac_final_results_cleaned.txt
+          git add iac_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
