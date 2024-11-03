@@ -1,0 +1,8 @@
+ir.iac.com
+*.iac.com
+r12appsnettest.iac.com
+r12appsnet.iac.com
+hypdev.iac.com
+www.ny-commapps.iac.com
+ny-commapps.iac.com
+r12appsdev.iac.com
