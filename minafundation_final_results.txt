@@ -1,0 +1,28 @@
+*.apt.packages.minaprotocol.com
+*.minaprotocol.com
+Fetching subdomains for %25.apt.packages.minaprotocol.com...
+Fetching subdomains for %25.minaprotocol.com...
+Fetching subdomains for minaprotocol.com...
+Subdomains found:
+Wildcard Subdomains found:
+apt.packages.minaprotocol.com
+bootnodes.minaprotocol.com
+develop.minaprotocol.com
+docs.minaprotocol.com
+faucet.minaprotocol.com
+forums.minaprotocol.com
+illuminate.minaprotocol.com
+kyc.minaprotocol.com
+minaprotocol.com
+oldsite.minaprotocol.com
+status.minaprotocol.com
+support.minaprotocol.com
+test.minaprotocol.com
+uptime-backend-legacy.minaprotocol.com
+uptime-backend-test.minaprotocol.com
+uptime-backend.minaprotocol.com
+uptime.minaprotocol.com
+www.illuminate.minaprotocol.com
+www.minaprotocol.com
+www2.minaprotocol.com
+zkignite.minaprotocol.com
