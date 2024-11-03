@@ -1,0 +1,17 @@
+*.apt.packages.minaprotocol.com
+*.minaprotocol.com
+develop.minaprotocol.com
+docs.minaprotocol.com
+faucet.minaprotocol.com
+forums.minaprotocol.com
+illuminate.minaprotocol.com
+minaprotocol.com
+status.minaprotocol.com
+support.minaprotocol.com
+test.minaprotocol.com
+uptime-backend-legacy.minaprotocol.com
+uptime.minaprotocol.com
+www.illuminate.minaprotocol.com
+www.minaprotocol.com
+www2.minaprotocol.com
+zkignite.minaprotocol.com
