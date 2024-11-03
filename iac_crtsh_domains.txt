@@ -1,0 +1,22 @@
+Fetching subdomains for iac.com...
+Subdomains found:
+meet.iac.com
+hypdev.iac.com
+hypprod.iac.com
+ny-commapps.iac.com
+r12appsnet.iac.com
+r12app.iac.com
+iac.com
+chat.iac.com
+r12appsnettest.iac.com
+r12appsdev.iac.com
+hyptest.iac.com
+apm.iac.com
+ftp.iac.com
+www.ny-commapps.iac.com
+webmail.iac.com
+r12appstest.iac.com
+ir.iac.com
+Wildcard Subdomains found:
+*.iac.com
+Fetching subdomains for %25.iac.com...
