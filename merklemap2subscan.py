@@ -7,12 +7,52 @@ import time
 import random  # For generating a random delay
 
 # Function to check subdomains for a single domain
-def check_domain(domain, all_domains, quiet, output_lock, max_retries=3):
+def check_domain(domain, all_domains, quiet, output_lock, stream=False, max_retries=3):
     if not quiet:
         print(f"\nSearching for domains related to: {domain}")
-    page = 1
+    
     domain_query = f"*.{domain}"
 
+    if stream:
+        page = 1
+        while True:
+            if not quiet:
+                print(f"Scanning stream for domain: {domain}")
+
+            for attempt in range(max_retries):
+                try:
+                    # Perform the API request for the given domain
+                    url = 'https://api.merklemap.com/search'
+                    params = {'query': domain_query, 'stream': 'true', 'stream_progress': 'true'}
+                    response = requests.get(url, params=params, stream=True)
+                    response.raise_for_status()  # Raise an error for bad responses
+                    break  # Exit retry loop if the request was successful
+                except requests.RequestException as e:
+                    print(f"Error fetching data for {domain}: {e}")
+                    if attempt < max_retries - 1:  # If not the last attempt, wait before retrying
+                        time.sleep(1)  # Wait 1 second before retrying
+                    else:
+                        return  # Exit if all retries failed
+
+            # Process the streaming response
+            for line in response.iter_lines():
+                if line:
+                    line = line.decode('utf-8')  # Decode bytes to string
+                    if line.startswith("data: "):
+                        json_line = line[6:]  # Remove 'data: ' prefix
+                        try:
+                            data = json.loads(json_line)
+                            if "domain" in data:
+                                with output_lock:
+                                    all_domains.append(data["domain"])
+                                if not quiet:
+                                    print(data["domain"])
+                        except json.JSONDecodeError as e:
+                            print(f"JSON decoding error: {e}")  # Handle the decoding error
+            return  # Exit after processing the stream
+
+    # If stream is not true, use pagination
+    page = 1
     while True:
         if not quiet:
             print(f"Scanning page {page} for domain: {domain}")
@@ -60,15 +100,15 @@ def check_domain(domain, all_domains, quiet, output_lock, max_retries=3):
         time.sleep(delay)
 
 # Thread worker function
-def worker(queue, all_domains, quiet, output_lock):
+def worker(queue, all_domains, quiet, output_lock, stream):
     while True:
         domain = queue.get()
         if domain is None:
             break
-        check_domain(domain, all_domains, quiet, output_lock)
+        check_domain(domain, all_domains, quiet, output_lock, stream)
         queue.task_done()
 
-def check_domains(domains, output_file=None, quiet=False, num_threads=1):
+def check_domains(domains, output_file=None, quiet=False, num_threads=1, stream=False):
     all_domains = []
     output_lock = threading.Lock()  # Lock to synchronize access to shared resources
     queue = Queue()
@@ -76,7 +116,7 @@ def check_domains(domains, output_file=None, quiet=False, num_threads=1):
     # Start thread workers
     threads = []
     for _ in range(num_threads):
-        thread = threading.Thread(target=worker, args=(queue, all_domains, quiet, output_lock))
+        thread = threading.Thread(target=worker, args=(queue, all_domains, quiet, output_lock, stream))
         thread.start()
         threads.append(thread)
 
@@ -106,7 +146,8 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", help="Output file to save domains in .txt format (e.g., domains.txt)", required=False)
     parser.add_argument("-q", "--quiet", help="Suppress real-time domain discovery output (only works with -o)", action="store_true")
     parser.add_argument("-t", "--threads", type=int, help="Number of threads to use for faster processing", default=1)
-    
+    parser.add_argument("-s", "--stream", help="Use stream mode for domain discovery", action="store_true")
+
     args = parser.parse_args()
 
     # Ensure that -q can only be used if -o is provided
@@ -116,5 +157,5 @@ if __name__ == "__main__":
     # Split the input domains by comma and remove any extra spaces
     domain_list = [domain.strip() for domain in args.domain.split(',')]
 
-    # Run the script with the provided domains, output file, quiet flag, and threads
-    check_domains(domain_list, args.output, args.quiet, args.threads)
+    # Run the script with the provided domains, output file, quiet flag, threads, and stream option
+    check_domains(domain_list, args.output, args.quiet, args.threads, args.stream)  # Pass stream argument
