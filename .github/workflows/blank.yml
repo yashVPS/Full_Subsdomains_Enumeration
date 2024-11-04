@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for minafundation
+name: Subdomain Recon Workflow for mixpanel
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "minaprotocol.com" > minafundation_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL minafundation_scope.txt -recursive -o minafundation_subs.txt
-          wc -l minafundation_subs.txt
-          git add minafundation_subs.txt
-          git commit -m 'Add Subfinder results for minafundation'
+          echo -e "mixpanel.com" > mixpanel_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL mixpanel_scope.txt -recursive -o mixpanel_subs.txt
+          wc -l mixpanel_subs.txt
+          git add mixpanel_subs.txt
+          git commit -m 'Add Subfinder results for mixpanel'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "minaprotocol.com" -r -w >> minafundation_crtsh_domains.txt
-          wc -l minafundation_crtsh_domains.txt
-          git add minafundation_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for minafundation'
+          python3 ./crtsh.py -d "mixpanel.com" -r -w >> mixpanel_crtsh_domains.txt
+          wc -l mixpanel_crtsh_domains.txt
+          git add mixpanel_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for mixpanel'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u minafundation_subs.txt minafundation_crtsh_domains.txt > minafundation_final1.txt
-          wc -l minafundation_final1.txt
-          git add minafundation_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for minafundation'
+          sort -u mixpanel_subs.txt mixpanel_crtsh_domains.txt > mixpanel_final1.txt
+          wc -l mixpanel_final1.txt
+          git add mixpanel_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for mixpanel'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a minafundation_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a minafundation_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a minafundation_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a mixpanel_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a mixpanel_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a mixpanel_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "minaprotocol.com" minafundation_alienvault.txt
-          python3 ./merklemap2subscan.py -d minaprotocol.com -o minafundation_merkle.txt -t 5 -s
+          ./alienvault_hostnamefetcher.sh "mixpanel.com" mixpanel_alienvault.txt
+          python3 ./merklemap2subscan.py -d mixpanel.com -o mixpanel_merkle.txt -t 5 -s
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt minafundation_alienvault.txt jldc.txt minafundation_merkle.txt > minafundation_combined_domains.txt
-          wc -l minafundation_combined_domains.txt
-          git add minafundation_combined_domains.txt minafundation_merkle.txt
-          git commit -m 'Combine additional source results for minafundation'
+          sort -u subcenter.txt hackertarget.txt mixpanel_alienvault.txt jldc.txt mixpanel_merkle.txt > mixpanel_combined_domains.txt
+          wc -l mixpanel_combined_domains.txt
+          git add mixpanel_combined_domains.txt mixpanel_merkle.txt
+          git commit -m 'Combine additional source results for mixpanel'
           git push
 
       - name: Download Amazon Domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(minaprotocol\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > minafundation_cloud_domains.txt
-          wc -l minafundation_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(mixpanel\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > mixpanel_cloud_domains.txt
+          wc -l mixpanel_cloud_domains.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add minafundation_cloud_domains.txt
-          git commit -m "Add processed minafundation domains"
+          git add mixpanel_cloud_domains.txt
+          git commit -m "Add processed mixpanel domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u minafundation_final1.txt minafundation_combined_domains.txt minafundation_cloud_domains.txt > minafundation_final_results.txt
-          wc -l minafundation_final_results.txt
-          git add minafundation_final_results.txt
-          git commit -m 'Combine all results for minafundation'
+          sort -u mixpanel_final1.txt mixpanel_combined_domains.txt mixpanel_cloud_domains.txt > mixpanel_final_results.txt
+          wc -l mixpanel_final_results.txt
+          git add mixpanel_final_results.txt
+          git commit -m 'Combine all results for mixpanel'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' minafundation_final_results.txt > minafundation_final_results_cleaned.txt
-          wc -l minafundation_final_results_cleaned.txt
-          git add minafundation_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' mixpanel_final_results.txt > mixpanel_final_results_cleaned.txt
+          wc -l mixpanel_final_results_cleaned.txt
+          git add mixpanel_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
