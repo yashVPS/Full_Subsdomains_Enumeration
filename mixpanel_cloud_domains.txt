@@ -1,0 +1,7 @@
+admin.mixpanel.com
+design.mixpanel.com
+migrate.api.mixpanel.com
+mixpanel.com
+partners.mixpanel.com
+prod.plg-orchestration-service.mixpanel.com
+stage.plg-orchestration-service.mixpanel.com
