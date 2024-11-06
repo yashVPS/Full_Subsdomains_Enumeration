@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for at&t
+name: Subdomain Recon Workflow for teamsnap
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "att.com" > att_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL att_scope.txt -recursive -o att_subs.txt
-          wc -l att_subs.txt
-          git add att_subs.txt
-          git commit -m 'Add Subfinder results for att'
+          echo -e "teamsnap.com" > teamsnap_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL teamsnap_scope.txt -recursive -o teamsnap_subs.txt
+          wc -l teamsnap_subs.txt
+          git add teamsnap_subs.txt
+          git commit -m 'Add Subfinder results for teamsnap'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "att.com" -r -w >> att_crtsh_domains.txt
-          wc -l att_crtsh_domains.txt
-          git add att_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for att'
+          python3 ./crtsh.py -d "teamsnap.com" -r -w >> teamsnap_crtsh_domains.txt
+          wc -l teamsnap_crtsh_domains.txt
+          git add teamsnap_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for teamsnap'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u att_subs.txt att_crtsh_domains.txt > att_final1.txt
-          wc -l att_final1.txt
-          git add att_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for att'
+          sort -u teamsnap_subs.txt teamsnap_crtsh_domains.txt > teamsnap_final1.txt
+          wc -l teamsnap_final1.txt
+          git add teamsnap_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for teamsnap'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a att_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a att_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a att_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a teamsnap_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a teamsnap_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a teamsnap_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "att.com" att_alienvault.txt
-          python3 ./merklemap2subscan.py -d att.com -o att_merkle.txt -t 5 -s
+          ./alienvault_hostnamefetcher.sh "teamsnap.com" teamsnap_alienvault.txt
+          python3 ./merklemap2subscan.py -d teamsnap.com -o teamsnap_merkle.txt -t 5 -s
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt att_alienvault.txt jldc.txt att_merkle.txt > att_combined_domains.txt
-          wc -l att_combined_domains.txt
-          git add att_combined_domains.txt att_merkle.txt
-          git commit -m 'Combine additional source results for att'
+          sort -u subcenter.txt hackertarget.txt teamsnap_alienvault.txt jldc.txt teamsnap_merkle.txt > teamsnap_combined_domains.txt
+          wc -l teamsnap_combined_domains.txt
+          git add teamsnap_combined_domains.txt teamsnap_merkle.txt
+          git commit -m 'Combine additional source results for teamsnap'
           git push
 
       - name: Download Amazon Domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(att\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > att_cloud_domains.txt
-          wc -l att_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(teamsnap\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > teamsnap_cloud_domains.txt
+          wc -l teamsnap_cloud_domains.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add att_cloud_domains.txt
-          git commit -m "Add processed att domains"
+          git add teamsnap_cloud_domains.txt
+          git commit -m "Add processed teamsnap domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u att_final1.txt att_combined_domains.txt att_cloud_domains.txt > att_final_results.txt
-          wc -l att_final_results.txt
-          git add att_final_results.txt
-          git commit -m 'Combine all results for att'
+          sort -u teamsnap_final1.txt teamsnap_combined_domains.txt teamsnap_cloud_domains.txt > teamsnap_final_results.txt
+          wc -l teamsnap_final_results.txt
+          git add teamsnap_final_results.txt
+          git commit -m 'Combine all results for teamsnap'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' att_final_results.txt > att_final_results_cleaned.txt
-          wc -l att_final_results_cleaned.txt
-          git add att_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' teamsnap_final_results.txt > teamsnap_final_results_cleaned.txt
+          wc -l teamsnap_final_results_cleaned.txt
+          git add teamsnap_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
