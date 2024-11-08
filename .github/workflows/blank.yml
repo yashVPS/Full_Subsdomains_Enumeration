@@ -49,6 +49,7 @@ jobs:
 
       - name: Fetch Additional Sources
         run: |
+          echo -e "gov.pk\ngop.pk" > commb_scope.txt
           xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
           xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
           xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
