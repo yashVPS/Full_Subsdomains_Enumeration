@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for teamsnap
+name: Subdomain Recon Workflow for pkmb
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "teamsnap.com" > teamsnap_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL teamsnap_scope.txt -recursive -o teamsnap_subs.txt
-          wc -l teamsnap_subs.txt
-          git add teamsnap_subs.txt
-          git commit -m 'Add Subfinder results for teamsnap'
+          echo -e "gov.pk\ngop.pk" > commb_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL commb_scope.txt -recursive -o gov_subs.txt
+          wc -l gov_subs.txt
+          git add gov_subs.txt
+          git commit -m 'Add Subfinder results for gov'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "teamsnap.com" -r -w >> teamsnap_crtsh_domains.txt
-          wc -l teamsnap_crtsh_domains.txt
-          git add teamsnap_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for teamsnap'
+          python3 ./crtsh.py -d "gov.pk,gop.pk" -r -w >> gov_crtsh_domains.txt
+          wc -l gov_crtsh_domains.txt
+          git add gov_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for gov'
           git push
 
-      - name: Combine Subfinder and crtsh results
+      - name: combine Subfinder and crtsh results
         run: |
-          sort -u teamsnap_subs.txt teamsnap_crtsh_domains.txt > teamsnap_final1.txt
-          wc -l teamsnap_final1.txt
-          git add teamsnap_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for teamsnap'
+          sort -u gov_subs.txt gov_crtsh_domains.txt > gov_final1.txt
+          wc -l gov_final1.txt
+          git add gov_final1.txt
+          git commit -m 'combine Subfinder and crtsh results for gov'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a teamsnap_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a teamsnap_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a teamsnap_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "teamsnap.com" teamsnap_alienvault.txt
-          python3 ./merklemap2subscan.py -d teamsnap.com -o teamsnap_merkle.txt -t 5 -s
+          ./alienvault_hostnamefetcher.sh "gov.pk,gop.pk" gov_alienvault.txt
+          python3 ./merklemap2subscan.py -d gov.pk,gop.pk -o gov_merkle.txt -t 5 -s
 
-      - name: Combine Additional Source Results
+      - name: combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt teamsnap_alienvault.txt jldc.txt teamsnap_merkle.txt > teamsnap_combined_domains.txt
-          wc -l teamsnap_combined_domains.txt
-          git add teamsnap_combined_domains.txt teamsnap_merkle.txt
-          git commit -m 'Combine additional source results for teamsnap'
+          sort -u subcenter.txt hackertarget.txt gov_alienvault.txt jldc.txt gov_merkle.txt > gov_combined_domains.txt
+          wc -l gov_combined_domains.txt
+          git add gov_combined_domains.txt gov_merkle.txt
+          git commit -m 'combine additional source results for gov'
           git push
 
       - name: Download Amazon Domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(teamsnap\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > teamsnap_cloud_domains.txt
-          wc -l teamsnap_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(gov\.pk|gop\.pk)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > gov_cloud_domains.txt
+          wc -l gov_cloud_domains.txt
 
-      - name: Commit and Push Filtered Domains
+      - name: commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add teamsnap_cloud_domains.txt
-          git commit -m "Add processed teamsnap domains"
+          git add gov_cloud_domains.txt
+          git commit -m "Add processed gov domains"
           git push
 
-      - name: Combine All Results
+      - name: combine All Results
         run: |
-          sort -u teamsnap_final1.txt teamsnap_combined_domains.txt teamsnap_cloud_domains.txt > teamsnap_final_results.txt
-          wc -l teamsnap_final_results.txt
-          git add teamsnap_final_results.txt
-          git commit -m 'Combine all results for teamsnap'
+          sort -u gov_final1.txt gov_combined_domains.txt gov_cloud_domains.txt > gov_final_results.txt
+          wc -l gov_final_results.txt
+          git add gov_final_results.txt
+          git commit -m 'combine all results for gov'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' teamsnap_final_results.txt > teamsnap_final_results_cleaned.txt
-          wc -l teamsnap_final_results_cleaned.txt
-          git add teamsnap_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' gov_final_results.txt > gov_final_results_cleaned.txt
+          wc -l gov_final_results_cleaned.txt
+          git add gov_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
