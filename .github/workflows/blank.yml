@@ -14,38 +14,38 @@ jobs:
           git config --global user.name "ASEEMYASH007"
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
       
-      - name: Download Subfinder
-        run: |
-          mkdir -p /home/runner/configz/subfinder
-          cp provider-config.yaml /home/runner/configz/subfinder
-          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
-          unzip subfinder_2.6.7_linux_amd64.zip
-          sudo chmod +x subfinder
+      # - name: Download Subfinder
+      #   run: |
+      #     mkdir -p /home/runner/configz/subfinder
+      #     cp provider-config.yaml /home/runner/configz/subfinder
+      #     wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
+      #     unzip subfinder_2.6.7_linux_amd64.zip
+      #     sudo chmod +x subfinder
 
-      - name: Run Subfinder
-        run: |
-          echo -e "gov.pk\ngop.pk" > commb_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL commb_scope.txt -recursive -o gov_subs.txt
-          wc -l gov_subs.txt
-          git add gov_subs.txt
-          git commit -m 'Add Subfinder results for gov'
-          git push
+      # - name: Run Subfinder
+      #   run: |
+      #     echo -e "gov.pk\ngop.pk" > commb_scope.txt
+      #     ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL commb_scope.txt -recursive -o gov_subs.txt
+      #     wc -l gov_subs.txt
+      #     git add gov_subs.txt
+      #     git commit -m 'Add Subfinder results for gov'
+      #     git push
 
-      - name: Run crtsh.py
-        run: |
-          python3 ./crtsh.py -d "gov.pk,gop.pk" -r -w >> gov_crtsh_domains.txt
-          wc -l gov_crtsh_domains.txt
-          git add gov_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for gov'
-          git push
+      # - name: Run crtsh.py
+      #   run: |
+      #     python3 ./crtsh.py -d "gov.pk,gop.pk" -r -w >> gov_crtsh_domains.txt
+      #     wc -l gov_crtsh_domains.txt
+      #     git add gov_crtsh_domains.txt
+      #     git commit -m 'Add crtsh.py results for gov'
+      #     git push
 
-      - name: combine Subfinder and crtsh results
-        run: |
-          sort -u gov_subs.txt gov_crtsh_domains.txt > gov_final1.txt
-          wc -l gov_final1.txt
-          git add gov_final1.txt
-          git commit -m 'combine Subfinder and crtsh results for gov'
-          git push
+      # - name: combine Subfinder and crtsh results
+      #   run: |
+      #     sort -u gov_subs.txt gov_crtsh_domains.txt > gov_final1.txt
+      #     wc -l gov_final1.txt
+      #     git add gov_final1.txt
+      #     git commit -m 'combine Subfinder and crtsh results for gov'
+      #     git push
 
       - name: Fetch Additional Sources
         run: |
@@ -53,12 +53,12 @@ jobs:
           xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
           xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "gov.pk,gop.pk" gov_alienvault.txt
+          #./alienvault_hostnamefetcher.sh "gov.pk,gop.pk" gov_alienvault.txt
           python3 ./merklemap2subscan.py -d gov.pk,gop.pk -o gov_merkle.txt -t 5 -s
 
       - name: combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt gov_alienvault.txt jldc.txt gov_merkle.txt > gov_combined_domains.txt
+          sort -u subcenter.txt hackertarget.txt jldc.txt gov_merkle.txt > gov_combined_domains.txt
           wc -l gov_combined_domains.txt
           git add gov_combined_domains.txt gov_merkle.txt
           git commit -m 'combine additional source results for gov'
