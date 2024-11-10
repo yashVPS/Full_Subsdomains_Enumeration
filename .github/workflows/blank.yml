@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for pkmb
+name: Subdomain Recon Workflow for Bentley
 
 on: [push]
 
@@ -14,55 +14,54 @@ jobs:
           git config --global user.name "ASEEMYASH007"
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
       
-      # - name: Download Subfinder
-      #   run: |
-      #     mkdir -p /home/runner/configz/subfinder
-      #     cp provider-config.yaml /home/runner/configz/subfinder
-      #     wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
-      #     unzip subfinder_2.6.7_linux_amd64.zip
-      #     sudo chmod +x subfinder
+      - name: Download Subfinder
+        run: |
+          mkdir -p /home/runner/configz/subfinder
+          cp provider-config.yaml /home/runner/configz/subfinder
+          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
+          unzip subfinder_2.6.7_linux_amd64.zip
+          sudo chmod +x subfinder
 
-      # - name: Run Subfinder
-      #   run: |
-      #     echo -e "gov.pk\ngop.pk" > commb_scope.txt
-      #     ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL commb_scope.txt -recursive -o gov_subs.txt
-      #     wc -l gov_subs.txt
-      #     git add gov_subs.txt
-      #     git commit -m 'Add Subfinder results for gov'
-      #     git push
+      - name: Run Subfinder
+        run: |
+          echo -e "bentley.com\nblyncsy.com\ncesium.com\neasypower.com\neagle.io\npowerlinesystems.com\nspidasoftware.com\ninfrastructureiot.com\nsensemetrics.com\nvdvcloud.com" > bentley_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL bentley_scope.txt -recursive -o bentley_subs.txt
+          wc -l bentley_subs.txt
+          git add bentley_subs.txt
+          git commit -m 'Add Subfinder results for Bentley'
+          git push
 
-      # - name: Run crtsh.py
-      #   run: |
-      #     python3 ./crtsh.py -d "gov.pk,gop.pk" -r -w >> gov_crtsh_domains.txt
-      #     wc -l gov_crtsh_domains.txt
-      #     git add gov_crtsh_domains.txt
-      #     git commit -m 'Add crtsh.py results for gov'
-      #     git push
+      - name: Run crtsh.py
+        run: |
+          python3 ./crtsh.py -d "bentley.com,blyncsy.com,cesium.com,easypower.com,eagle.io,powerlinesystems.com,spidasoftware.com,infrastructureiot.com,sensemetrics.com,vdvcloud.com" -r -w >> bentley_crtsh_domains.txt
+          wc -l bentley_crtsh_domains.txt
+          git add bentley_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for Bentley'
+          git push
 
-      # - name: combine Subfinder and crtsh results
-      #   run: |
-      #     sort -u gov_subs.txt gov_crtsh_domains.txt > gov_final1.txt
-      #     wc -l gov_final1.txt
-      #     git add gov_final1.txt
-      #     git commit -m 'combine Subfinder and crtsh results for gov'
-      #     git push
+      - name: Combine Subfinder and crtsh results
+        run: |
+          sort -u bentley_subs.txt bentley_crtsh_domains.txt > bentley_final1.txt
+          wc -l bentley_final1.txt
+          git add bentley_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for Bentley'
+          git push
 
       - name: Fetch Additional Sources
         run: |
-          echo -e "gov.pk\ngop.pk" > commb_scope.txt
-          xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a commb_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a bentley_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a bentley_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a bentley_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          #./alienvault_hostnamefetcher.sh "gov.pk,gop.pk" gov_alienvault.txt
-          python3 ./merklemap2subscan.py -d gov.pk,gop.pk -o gov_merkle2.txt -t 5 
+          ./alienvault_hostnamefetcher.sh "bentley.com,blyncsy.com,cesium.com,easypower.com,eagle.io,powerlinesystems.com,spidasoftware.com,infrastructureiot.com,sensemetrics.com,vdvcloud.com" bentley_alienvault.txt
+          python3 ./merklemap2subscan.py -d bentley.com,blyncsy.com,cesium.com,easypower.com,eagle.io,powerlinesystems.com,spidasoftware.com,infrastructureiot.com,sensemetrics.com,vdvcloud.com -o bentley_merkle.txt -t 5
 
-      - name: combine Additional Source Results
+      - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt jldc.txt gov_merkle2.txt > gov_combined_domains2.txt
-          wc -l gov_combined_domains.txt
-          git add gov_combined_domains.txt gov_merkle2.txt
-          git commit -m 'combine additional source results for gov'
+          sort -u subcenter.txt hackertarget.txt bentley_alienvault.txt jldc.txt bentley_merkle.txt > bentley_combined_domains.txt
+          wc -l bentley_combined_domains.txt
+          git add bentley_combined_domains.txt bentley_merkle.txt
+          git commit -m 'Combine additional source results for Bentley'
           git push
 
       - name: Download Amazon Domains
@@ -85,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(gov\.pk|gop\.pk)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > gov_cloud_domains2.txt
-          wc -l gov_cloud_domains2.txt
+          grep -Eo '\b(\S+\.)?(bentley\.com|blyncsy\.com|cesium\.com|easypower\.com|eagle\.io|powerlinesystems\.com|spidasoftware\.com|infrastructureiot\.com|sensemetrics\.com|vdvcloud\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > bentley_cloud_domains.txt
+          wc -l bentley_cloud_domains.txt
 
-      - name: commit and Push Filtered Domains
+      - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add gov_cloud_domains2.txt
-          git commit -m "Add processed gov domains"
+          git add bentley_cloud_domains.txt
+          git commit -m "Add processed Bentley domains"
           git push
 
-      - name: combine All Results
+      - name: Combine All Results
         run: |
-          sort -u gov_final1.txt gov_combined_domains.txt gov_cloud_domains.txt > gov_final_results2.txt
-          wc -l gov_final_results2.txt
-          git add gov_final_results2.txt
-          git commit -m 'combine all results for gov'
+          sort -u bentley_final1.txt bentley_combined_domains.txt bentley_cloud_domains.txt > bentley_final_results.txt
+          wc -l bentley_final_results.txt
+          git add bentley_final_results.txt
+          git commit -m 'Combine all results for Bentley'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' gov_final_results2.txt > gov_final_results_cleaned2.txt
-          wc -l gov_final_results_cleaned2.txt
-          git add gov_final_results_cleaned2.txt
+          sed 's/^\*\.\(.*\)$/\1/' bentley_final_results.txt > bentley_final_results_cleaned.txt
+          wc -l bentley_final_results_cleaned.txt
+          git add bentley_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
