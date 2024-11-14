@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for Bentley
+name: Subdomain Recon Workflow for LATAM Airlines
 
 on: [push]
 
@@ -24,44 +24,44 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "bentley.com\nblyncsy.com\ncesium.com\neasypower.com\neagle.io\npowerlinesystems.com\nspidasoftware.com\ninfrastructureiot.com\nsensemetrics.com\nvdvcloud.com" > bentley_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL bentley_scope.txt -recursive -o bentley_subs.txt
-          wc -l bentley_subs.txt
-          git add bentley_subs.txt
-          git commit -m 'Add Subfinder results for Bentley'
+          echo -e "latampass.com\nlanchile.cl\nlatampass.cl\nlan.com\nlatamairlines.com\nlatam.com\nappslatam.com\nlanchile.com\nlatamcargo.com" > latam_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL latam_scope.txt -recursive -o latam_subs.txt
+          wc -l latam_subs.txt
+          git add latam_subs.txt
+          git commit -m 'Add Subfinder results for LATAM Airlines'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "bentley.com,blyncsy.com,cesium.com,easypower.com,eagle.io,powerlinesystems.com,spidasoftware.com,infrastructureiot.com,sensemetrics.com,vdvcloud.com" -r -w >> bentley_crtsh_domains.txt
-          wc -l bentley_crtsh_domains.txt
-          git add bentley_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for Bentley'
+          python3 ./crtsh.py -d "latampass.com,lanchile.cl,latampass.cl,lan.com,latamairlines.com,latam.com,appslatam.com,lanchile.com,latamcargo.com" -r -w >> latam_crtsh_domains.txt
+          wc -l latam_crtsh_domains.txt
+          git add latam_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for LATAM Airlines'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u bentley_subs.txt bentley_crtsh_domains.txt > bentley_final1.txt
-          wc -l bentley_final1.txt
-          git add bentley_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for Bentley'
+          sort -u latam_subs.txt latam_crtsh_domains.txt > latam_final1.txt
+          wc -l latam_final1.txt
+          git add latam_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for LATAM Airlines'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a bentley_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a bentley_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a bentley_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a latam_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a latam_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a latam_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "bentley.com,blyncsy.com,cesium.com,easypower.com,eagle.io,powerlinesystems.com,spidasoftware.com,infrastructureiot.com,sensemetrics.com,vdvcloud.com" bentley_alienvault.txt
-          python3 ./merklemap2subscan.py -d bentley.com,blyncsy.com,cesium.com,easypower.com,eagle.io,powerlinesystems.com,spidasoftware.com,infrastructureiot.com,sensemetrics.com,vdvcloud.com -o bentley_merkle.txt -t 5
+          ./alienvault_hostnamefetcher.sh "latampass.com,lanchile.cl,latampass.cl,lan.com,latamairlines.com,latam.com,appslatam.com,lanchile.com,latamcargo.com" latam_alienvault.txt
+          python3 ./merklemap2subscan.py -d latampass.com,lanchile.cl,latampass.cl,lan.com,latamairlines.com,latam.com,appslatam.com,lanchile.com,latamcargo.com -o latam_merkle.txt -t 5
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt bentley_alienvault.txt jldc.txt bentley_merkle.txt > bentley_combined_domains.txt
-          wc -l bentley_combined_domains.txt
-          git add bentley_combined_domains.txt bentley_merkle.txt
-          git commit -m 'Combine additional source results for Bentley'
+          sort -u subcenter.txt hackertarget.txt latam_alienvault.txt jldc.txt latam_merkle.txt > latam_combined_domains.txt
+          wc -l latam_combined_domains.txt
+          git add latam_combined_domains.txt latam_merkle.txt
+          git commit -m 'Combine additional source results for LATAM Airlines'
           git push
 
       - name: Download Amazon Domains
@@ -84,29 +84,29 @@ jobs:
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(bentley\.com|blyncsy\.com|cesium\.com|easypower\.com|eagle\.io|powerlinesystems\.com|spidasoftware\.com|infrastructureiot\.com|sensemetrics\.com|vdvcloud\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > bentley_cloud_domains.txt
-          wc -l bentley_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(latampass\.com|lanchile\.cl|latampass\.cl|lan\.com|latamairlines\.com|latam\.com|appslatam\.com|lanchile\.com|latamcargo\.com)\b' all_domains.NAYA.txt | tr ' ' '\n' | sort -u > latam_cloud_domains.txt
+          wc -l latam_cloud_domains.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add bentley_cloud_domains.txt
-          git commit -m "Add processed Bentley domains"
+          git add latam_cloud_domains.txt
+          git commit -m "Add processed LATAM Airlines domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u bentley_final1.txt bentley_combined_domains.txt bentley_cloud_domains.txt > bentley_final_results.txt
-          wc -l bentley_final_results.txt
-          git add bentley_final_results.txt
-          git commit -m 'Combine all results for Bentley'
+          sort -u latam_final1.txt latam_combined_domains.txt latam_cloud_domains.txt > latam_final_results.txt
+          wc -l latam_final_results.txt
+          git add latam_final_results.txt
+          git commit -m 'Combine all results for LATAM Airlines'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' bentley_final_results.txt > bentley_final_results_cleaned.txt
-          wc -l bentley_final_results_cleaned.txt
-          git add bentley_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' latam_final_results.txt > latam_final_results_cleaned.txt
+          wc -l latam_final_results_cleaned.txt
+          git add latam_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
