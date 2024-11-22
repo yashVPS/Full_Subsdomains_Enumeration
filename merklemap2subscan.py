@@ -1,161 +1,68 @@
 import requests
 import argparse
-import json
-import threading
-from queue import Queue
 import time
-import random  # For generating a random delay
+import random
 
-# Function to check subdomains for a single domain
-def check_domain(domain, all_domains, quiet, output_lock, stream=False, max_retries=3):
-    if not quiet:
-        print(f"\nSearching for domains related to: {domain}")
+def fetch_subdomains(domain):
+    base_url = "https://api.merklemap.com/search"
+    page = 0
+    subdomains = []
     
-    domain_query = f"*.{domain}"
-
-    if stream:
-        page = 1
-        while True:
-            if not quiet:
-                print(f"Scanning stream for domain: {domain}")
-
-            for attempt in range(max_retries):
-                try:
-                    # Perform the API request for the given domain
-                    url = 'https://api.merklemap.com/search'
-                    params = {'query': domain_query, 'stream': 'true', 'stream_progress': 'true'}
-                    response = requests.get(url, params=params, stream=True)
-                    response.raise_for_status()  # Raise an error for bad responses
-                    break  # Exit retry loop if the request was successful
-                except requests.RequestException as e:
-                    print(f"Error fetching data for {domain}: {e}")
-                    if attempt < max_retries - 1:  # If not the last attempt, wait before retrying
-                        time.sleep(1)  # Wait 1 second before retrying
-                    else:
-                        return  # Exit if all retries failed
-
-            # Process the streaming response
-            for line in response.iter_lines():
-                if line:
-                    line = line.decode('utf-8')  # Decode bytes to string
-                    if line.startswith("data: "):
-                        json_line = line[6:]  # Remove 'data: ' prefix
-                        try:
-                            data = json.loads(json_line)
-                            if "domain" in data:
-                                with output_lock:
-                                    all_domains.append(data["domain"])
-                                if not quiet:
-                                    print(data["domain"])
-                        except json.JSONDecodeError as e:
-                            print(f"JSON decoding error: {e}")  # Handle the decoding error
-            return  # Exit after processing the stream
-
-    # If stream is not true, use pagination
-    page = 1
     while True:
-        if not quiet:
-            print(f"Scanning page {page} for domain: {domain}")
-
-        for attempt in range(max_retries):
-            try:
-                # Perform the API request for the given domain and page
-                url = 'https://api.merklemap.com/search'
-                params = {'query': domain_query, 'page': page}
-                response = requests.get(url, params=params)
-                response.raise_for_status()  # Raise an error for bad responses
-                break  # Exit retry loop if the request was successful
-            except requests.RequestException as e:
-                print(f"Error fetching data for {domain} on page {page}: {e}")
-                if attempt < max_retries - 1:  # If not the last attempt, wait before retrying
-                    time.sleep(1)  # Wait 1 second before retrying
-                else:
-                    return  # Exit if all retries failed
-
-        # Parse the JSON response
-        data = response.json()
-
-        # Check if there are results in the current page
-        if not data.get("results"):
-            if not quiet:
-                print(f"No more results found for {domain} on page {page}.")
+        params = {"query": f"*.{domain}", "page": page}
+        try:
+            response = requests.get(base_url, params=params)
+            if response.status_code != 200:
+                print(f"[Error] Failed to fetch page {page} for domain {domain}. HTTP Status Code: {response.status_code}")
+                break
+            
+            data = response.json()
+            results = data.get("results", [])
+            if not results:  # Break if results are empty (end of data)
+                break
+            
+            for entry in results:
+                subdomain = entry.get("domain")
+                if subdomain:
+                    subdomains.append(subdomain)
+            
+            print(f"[Info] Fetched page {page} for domain {domain}. Subdomains count: {len(subdomains)}")
+            page += 1
+            
+            # Random delay between 15 to 17 seconds
+            delay = random.randint(15, 17)
+            print(f"[Info] Waiting for {delay} seconds before the next request...")
+            time.sleep(delay)
+            
+        except Exception as e:
+            print(f"[Error] Exception occurred: {e}")
             break
+    
+    return subdomains
 
-        # Extract the domain from each result
-        for result in data["results"]:
-            domain_value = result.get("domain")
-            if domain_value:
-                with output_lock:
-                    all_domains.append(domain_value)
-                if not quiet:
-                    print(domain_value)
-
-        # Move to the next page
-        page += 1
-
-        # Add a random delay between 5 to 8 seconds before fetching the next page
-        delay = random.uniform(15, 17)
-        if not quiet:
-            print(f"Waiting for {delay:.2f} seconds before the next request...")
-        time.sleep(delay)
-
-# Thread worker function
-def worker(queue, all_domains, quiet, output_lock, stream):
-    while True:
-        domain = queue.get()
-        if domain is None:
-            break
-        check_domain(domain, all_domains, quiet, output_lock, stream)
-        queue.task_done()
-
-def check_domains(domains, output_file=None, quiet=False, num_threads=1, stream=False):
-    all_domains = []
-    output_lock = threading.Lock()  # Lock to synchronize access to shared resources
-    queue = Queue()
-
-    # Start thread workers
-    threads = []
-    for _ in range(num_threads):
-        thread = threading.Thread(target=worker, args=(queue, all_domains, quiet, output_lock, stream))
-        thread.start()
-        threads.append(thread)
-
-    # Enqueue domains
-    for domain in domains:
-        queue.put(domain)
-
-    # Wait for all domains to be processed
-    queue.join()
-
-    # Stop workers
-    for _ in range(num_threads):
-        queue.put(None)
-    for thread in threads:
-        thread.join()
-
-    # If output file is provided, save the results to the file
-    if output_file:
-        with open(output_file, 'w') as f:
-            for domain in all_domains:
-                f.write(domain + "\n")
-        print(f"\nDomains saved to {output_file}")
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Extract domains using Merklemap API with threading support.")
-    parser.add_argument("-d", "--domain", help="Comma-separated list of domains (e.g., example.com,example.org)", required=True)
-    parser.add_argument("-o", "--output", help="Output file to save domains in .txt format (e.g., domains.txt)", required=False)
-    parser.add_argument("-q", "--quiet", help="Suppress real-time domain discovery output (only works with -o)", action="store_true")
-    parser.add_argument("-t", "--threads", type=int, help="Number of threads to use for faster processing", default=1)
-    parser.add_argument("-s", "--stream", help="Use stream mode for domain discovery", action="store_true")
-
+def main():
+    parser = argparse.ArgumentParser(description="MerkleMap Subdomain Extractor")
+    parser.add_argument("-d", "--domains", type=str, required=True, help="Comma-separated list of domains to fetch subdomains for")
+    parser.add_argument("-o", "--output", type=str, default="subdomains_output.txt", help="Output file name (default: subdomains_output.txt)")
     args = parser.parse_args()
 
-    # Ensure that -q can only be used if -o is provided
-    if args.quiet and not args.output:
-        parser.error("The -q option requires -o (output file) to be used.")
+    domains = args.domains.split(",")
+    all_subdomains = []
 
-    # Split the input domains by comma and remove any extra spaces
-    domain_list = [domain.strip() for domain in args.domain.split(',')]
+    for domain in domains:
+        domain = domain.strip()
+        if not domain:
+            continue
+        print(f"[Info] Fetching subdomains for: {domain}")
+        subdomains = fetch_subdomains(domain)
+        all_subdomains.extend(subdomains)  # Flattening the list of subdomains
 
-    # Run the script with the provided domains, output file, quiet flag, threads, and stream option
-    check_domains(domain_list, args.output, args.quiet, args.threads, args.stream)  # Pass stream argument
+    # Save subdomains to specified output file
+    with open(args.output, "w") as f:
+        for subdomain in all_subdomains:
+            f.write(f"{subdomain}\n")  # Write each subdomain on a new line
+
+    print(f"[Info] Subdomains saved to {args.output}")
+
+if __name__ == "__main__":
+    main()
