@@ -1,0 +1,16 @@
+adfs.onestop.co.uk
+admin.device.mobile.tesco.com
+admin.mytesco.mobile.tesco.com
+api.analytics.mobile.tesco.com
+api.mytesco.mobile.tesco.com
+device.mobile.tesco.com
+devices.tesco.com
+devocsetcmg.tesco.com
+onestop.co.uk
+origin-eun.pricepromotion-dev.api.tesco.com
+origin-euw.pricepromotion-dev.api.tesco.com
+prodocsetcmg.tesco.com
+tesco.com
+www.adfs.onestop.co.uk
+www.api.analytics.mobile.tesco.com
+www.onestop.co.uk
