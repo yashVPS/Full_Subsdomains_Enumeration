@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for Tesco
+name: Subdomain Recon Workflow for Tesco company
 
 on: [push]
 
