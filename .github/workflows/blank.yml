@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for Tesco company
+name: Subdomain Recon Workflow for reliance company
 
 on: [push]
 
@@ -23,81 +23,81 @@ jobs:
           sudo chmod +x subfinder
       - name: Run Subfinder
         run: |
-          echo -e "tesco.com\nonestop.co.uk" > tesco_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL tesco_scope.txt -recursive -o tesco_subs.txt
-          wc -l tesco_subs.txt
-          git add tesco_subs.txt
-          git commit -m 'Add Subfinder results for Tesco'
+          echo -e "reliancedigital.in" > reliance_scope.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL reliance_scope.txt -recursive -o reliance_subs.txt
+          wc -l reliance_subs.txt
+          git add reliance_subs.txt
+          git commit -m 'Add Subfinder results for reliance'
           git push
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "tesco.com,onestop.co.uk" -r -w >> tesco_crtsh_domains.txt
-          wc -l tesco_crtsh_domains.txt
-          git add tesco_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for Tesco'
+          python3 ./crtsh.py -d "reliancedigital.in" -r -w >> reliance_crtsh_domains.txt
+          wc -l reliance_crtsh_domains.txt
+          git add reliance_crtsh_domains.txt
+          git commit -m 'Add crtsh.py results for reliance'
           git push
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u tesco_subs.txt tesco_crtsh_domains.txt > tesco_final1.txt
-          wc -l tesco_final1.txt
-          git add tesco_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for Tesco'
+          sort -u reliance_subs.txt reliance_crtsh_domains.txt > reliance_final1.txt
+          wc -l reliance_final1.txt
+          git add reliance_final1.txt
+          git commit -m 'Combine Subfinder and crtsh results for reliance'
           git push
       - name: Fetch Additional Sources
         run: |
-          xargs -a tesco_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a tesco_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a tesco_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a reliance_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
+          xargs -a reliance_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
+          xargs -a reliance_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "tesco.com,onestop.co.uk" tesco_alienvault.txt
-          python3 ./merklemap2subscan.py -d tesco.com,onestop.co.uk -o tesco_merkle.txt
+          ./alienvault_hostnamefetcher.sh "reliancedigital.in" reliance_alienvault.txt
+          python3 ./merklemap2subscan.py -d reliancedigital.in -o reliance_merkle.txt
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt tesco_alienvault.txt jldc.txt tesco_merkle.txt > tesco_combined_domains.txt
-          wc -l tesco_combined_domains.txt
-          git add tesco_combined_domains.txt tesco_merkle.txt
-          git commit -m 'Combine additional source results for Tesco'
+          sort -u subcenter.txt hackertarget.txt reliance_alienvault.txt jldc.txt reliance_merkle.txt > reliance_combined_domains.txt
+          wc -l reliance_combined_domains.txt
+          git add reliance_combined_domains.txt reliance_merkle.txt
+          git commit -m 'Combine additional source results for reliance'
           git push
       - name: Download Amazon Domains
-        run: curl -o amazon_domains.TESCO.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+        run: curl -o amazon_domains.reliance.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
 
       - name: Download Oracle Domains
-        run: curl -o oracle_domains.TESCO.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+        run: curl -o oracle_domains.reliance.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
 
       - name: Download DigitalOcean Domains
-        run: curl -o digitalocean_domains.TESCO.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+        run: curl -o digitalocean_domains.reliance.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
 
       - name: Download Google Domains
-        run: curl -o google_domains.TESCO.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+        run: curl -o google_domains.reliance.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
 
       - name: Download Microsoft Domains
-        run: curl -o microsoft_domains.TESCO.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+        run: curl -o microsoft_domains.reliance.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
 
       - name: Concatenate All Domains
-        run: cat amazon_domains.TESCO.txt oracle_domains.TESCO.txt digitalocean_domains.TESCO.txt google_domains.TESCO.txt microsoft_domains.TESCO.txt > all_domains.TESCO.txt
+        run: cat amazon_domains.reliance.txt oracle_domains.reliance.txt digitalocean_domains.reliance.txt google_domains.reliance.txt microsoft_domains.reliance.txt > all_domains.reliance.txt
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(tesco\.com|onestop\.co\.uk)\b' all_domains.TESCO.txt | tr ' ' '\n' | sort -u > tesco_cloud_domains.txt
-          wc -l tesco_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(reliancedigital\.in)\b' all_domains.reliance.txt | tr ' ' '\n' | sort -u > reliance_cloud_domains.txt
+          wc -l reliance_cloud_domains.txt
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add tesco_cloud_domains.txt
-          git commit -m "Add processed Tesco domains"
+          git add reliance_cloud_domains.txt
+          git commit -m "Add processed reliance domains"
           git push
       - name: Combine All Results
         run: |
-          sort -u tesco_final1.txt tesco_combined_domains.txt tesco_cloud_domains.txt > tesco_final_results.txt
-          wc -l tesco_final_results.txt
-          git add tesco_final_results.txt
-          git commit -m 'Combine all results for Tesco'
+          sort -u reliance_final1.txt reliance_combined_domains.txt reliance_cloud_domains.txt > reliance_final_results.txt
+          wc -l reliance_final_results.txt
+          git add reliance_final_results.txt
+          git commit -m 'Combine all results for reliance'
           git push
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' tesco_final_results.txt > tesco_final_results_cleaned.txt
-          wc -l tesco_final_results_cleaned.txt
-          git add tesco_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' reliance_final_results.txt > reliance_final_results_cleaned.txt
+          wc -l reliance_final_results_cleaned.txt
+          git add reliance_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
