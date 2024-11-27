@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for Howard County
+name: Subdomain Recon Workflow for g4s company
 
 on: [push]
 
@@ -24,89 +24,89 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "howardcountyeda.org\nhcpss.org\nvisithowardcounty.com\nhowardchamber.com\nhchsmd.org\nhceanea.org\nlivegreenhoward.com\nhclhic.org\nhocoarts.org" > howard_scope.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL howard_scope.txt -recursive -o howard_subs.txt
-          wc -l howard_subs.txt
-          git add howard_subs.txt
-          git commit -m 'Add Subfinder results for Howard County'
+          echo -e "g4s.com" > g4s_scope2_.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL g4s_scope2_.txt -recursive -o g4s_subs2_.txt
+          wc -l g4s_subs2_.txt
+          git add g4s_subs2_.txt
+          git commit -m 'Add Subfinder results for g4s company'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "howardcountyeda.org,hcpss.org,visithowardcounty.com,howardchamber.com,hchsmd.org,hceanea.org,livegreenhoward.com,hclhic.org,hocoarts.org" -r -w >> howard_crtsh_domains.txt
-          wc -l howard_crtsh_domains.txt
-          git add howard_crtsh_domains.txt
-          git commit -m 'Add crtsh.py results for Howard County'
+          python3 ./crtsh.py -d "g4s.com" -r -w >> g4s_crtsh_domains2_.txt
+          wc -l g4s_crtsh_domains2_.txt
+          git add g4s_crtsh_domains2_.txt
+          git commit -m 'Add crtsh.py results for g4s company'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u howard_subs.txt howard_crtsh_domains.txt > howard_final1.txt
-          wc -l howard_final1.txt
-          git add howard_final1.txt
-          git commit -m 'Combine Subfinder and crtsh results for Howard County'
+          sort -u g4s_subs2_.txt g4s_crtsh_domains2_.txt > g4s_final12_.txt
+          wc -l g4s_final12_.txt
+          git add g4s_final12_.txt
+          git commit -m 'Combine Subfinder and crtsh results for g4s company'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a howard_scope.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc.txt'
-          xargs -a howard_scope.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter.txt'
-          xargs -a howard_scope.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget.txt'
+          xargs -a g4s_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
+          xargs -a g4s_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
+          xargs -a g4s_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "howardcountyeda.org,hcpss.org,visithowardcounty.com,howardchamber.com,hchsmd.org,hceanea.org,livegreenhoward.com,hclhic.org,hocoarts.org" howard_alienvault.txt
-          python3 ./merklemap2subscan.py -d howardcountyeda.org,hcpss.org,visithowardcounty.com,howardchamber.com,hchsmd.org,hceanea.org,livegreenhoward.com,hclhic.org,hocoarts.org -o howard_merkle.txt
+          ./alienvault_hostnamefetcher.sh "g4s.com" g4s_alienvault2_.txt
+          python3 ./merklemap2subscan.py -d g4s.com	-o g4s_merkle2_.txt
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter.txt hackertarget.txt howard_alienvault.txt jldc.txt howard_merkle.txt > howard_combined_domains.txt
-          wc -l howard_combined_domains.txt
-          git add howard_combined_domains.txt howard_merkle.txt
-          git commit -m 'Combine additional source results for Howard County'
+          sort -u subcenter2_.txt hackertarget2_.txt g4s_alienvault2_.txt jldc2_.txt g4s_merkle2_.txt > g4s_combined_domains2_.txt
+          wc -l g4s_combined_domains2_.txt
+          git add g4s_combined_domains2_.txt g4s_merkle2_.txt
+          git commit -m 'Combine additional source results for g4s company'
           git push
 
       - name: Download Amazon Domains
-        run: curl -o amazon_domains.HOWARD.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+        run: curl -o amazon_domains.g4s2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni2_.txt
 
       - name: Download Oracle Domains
-        run: curl -o oracle_domains.HOWARD.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+        run: curl -o oracle_domains.g4s2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni2_.txt
 
       - name: Download DigitalOcean Domains
-        run: curl -o digitalocean_domains.HOWARD.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+        run: curl -o digitalocean_domains.g4s2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni2_.txt
 
       - name: Download Google Domains
-        run: curl -o google_domains.HOWARD.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+        run: curl -o google_domains.g4s2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni2_.txt
 
       - name: Download Microsoft Domains
-        run: curl -o microsoft_domains.HOWARD.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+        run: curl -o microsoft_domains.g4s2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni2_.txt
 
       - name: Concatenate All Domains
-        run: cat amazon_domains.HOWARD.txt oracle_domains.HOWARD.txt digitalocean_domains.HOWARD.txt google_domains.HOWARD.txt microsoft_domains.HOWARD.txt > all_domains.HOWARD.txt
+        run: cat amazon_domains.g4s2_.txt oracle_domains.g4s2_.txt digitalocean_domains.g4s2_.txt google_domains.g4s2_.txt microsoft_domains.g4s2_.txt > all_domains.g4s2_.txt
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(howardcountyeda\.org|hcpss\.org|visithowardcounty\.com|howardchamber\.com|hchsmd\.org|hceanea\.org|livegreenhoward\.com|hclhic\.org|hocoarts\.org)\b' all_domains.HOWARD.txt | tr ' ' '\n' | sort -u > howard_cloud_domains.txt
-          wc -l howard_cloud_domains.txt
+          grep -Eo '\b(\S+\.)?(g4s\.com)\b' all_domains.g4s2_.txt | tr ' ' '\n' | sort -u > g4s_cloud_domains2_.txt
+          wc -l g4s_cloud_domains2_.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add howard_cloud_domains.txt
-          git commit -m "Add processed Howard County domains"
+          git add g4s_cloud_domains2_.txt
+          git commit -m "Add processed g4s company domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u howard_final1.txt howard_combined_domains.txt howard_cloud_domains.txt > howard_final_results.txt
-          wc -l howard_final_results.txt
-          git add howard_final_results.txt
-          git commit -m 'Combine all results for Howard County'
+          sort -u g4s_final12_.txt g4s_combined_domains2_.txt g4s_cloud_domains2_.txt > g4s_final_results2_.txt
+          wc -l g4s_final_results2_.txt
+          git add g4s_final_results2_.txt
+          git commit -m 'Combine all results for g4s company'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' howard_final_results.txt > howard_final_results_cleaned.txt
-          wc -l howard_final_results_cleaned.txt
-          git add howard_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' g4s_final_results2_.txt > g4s_final_results_cleaned.txt
+          wc -l g4s_final_results_cleaned.txt
+          git add g4s_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
