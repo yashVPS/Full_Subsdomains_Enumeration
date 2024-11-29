@@ -1,0 +1,39 @@
+Fetching subdomains for dsu.edu.in...
+Subdomains found:
+www.dailer.dsu.edu.in
+nengg.dsu.edu.in
+cpcontacts.dsu.edu.in
+www.cvit2021.dsu.edu.in
+soe.dsu.edu.in
+cvit2021.dsu.edu.in
+www.shashikala.dsu.edu.in
+www.moodle.dsu.edu.in
+www.dsrf.in.dsu.edu.in
+dsu.edu.in
+dailerksl.dsu.edu.in
+autodiscover.dsu.edu.in
+mail.dsu.edu.in
+moodle.dsu.edu.in
+dsatexam.dsu.edu.in
+www.cvit2020.dsu.edu.in
+dsrf.in.dsu.edu.in
+www.soe.dsu.edu.in
+dailer.dsu.edu.in
+cpanel.dsu.edu.in
+www.moodlecee.dsu.edu.in
+webdisk.dsu.edu.in
+www.nengg.dsu.edu.in
+apply.dsu.edu.in
+www.dsu.edu.in
+www.dailerksl.dsu.edu.in
+admissions.dsu.edu.in
+cpcalendars.dsu.edu.in
+international-admissions.dsu.edu.in
+shashikala.dsu.edu.in
+webmail.dsu.edu.in
+www.admissions.dsu.edu.in
+moodlecee.dsu.edu.in
+cvit2020.dsu.edu.in
+Wildcard Subdomains found:
+*.dsu.edu.in
+Fetching subdomains for %25.dsu.edu.in...
