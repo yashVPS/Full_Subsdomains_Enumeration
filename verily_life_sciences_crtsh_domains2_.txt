@@ -1,0 +1,77 @@
+Fetching subdomains for onduo.com...
+Error fetching subdomains for onduo.com: HTTPSConnectionPool(host='crt.sh', port=443): Read timed out. (read timeout=25)
+Fetching subdomains for verily.com...
+Error fetching subdomains for verily.com: HTTPSConnectionPool(host='crt.sh', port=443): Read timed out. (read timeout=25)
+Fetching subdomains for signalpath.com...
+Fetching subdomains for projectbaseline.com...
+Fetching subdomains for granularinsurance.com...
+Subdomains found:
+dev.granularinsurance.com
+www.clientuat.signalpath.com
+new-site.signalpath.com
+enrollment-dev.projectbaseline.com
+stage-viewpoint-api.gcp.signalpath.com
+data.product.signalpath.com
+prod.gcp.signalpath.com
+content.product.signalpath.com
+jenkins-unstable.gcp.signalpath.com
+prod-kp.gcp.signalpath.com
+auth.projectbaseline.com
+dev.gcp.signalpath.com
+dev-stable.gcp.signalpath.com
+test-viewpoint-api.gcp.signalpath.com
+www.support.signalpath.com
+dashboard.projectbaseline.com
+stage.gcp.signalpath.com
+gateway-dev-unstable.gcp.signalpath.com
+www.granularinsurance.com
+test.gcp.signalpath.com
+cks-a.granularinsurance.com
+clientdev.signalpath.com
+staging.gcp.signalpath.com
+tableau.signalpath.com
+prod-crosscloud.gcp.signalpath.com
+kp-viewpoint-api.signalpath.com
+image.projectbaseline.com
+dev-stable-viewpoint-api.gcp.signalpath.com
+support.signalpath.com
+click.projectbaseline.com
+jenkins-stable.gcp.signalpath.com
+newhost.granularinsurance.com
+app.signalpath.com
+staging-viewpoint-api.gcp.signalpath.com
+test-automation-viewpoint-api.gcp.signalpath.com
+prod-viewpoint-api.gcp.signalpath.com
+dev-unstable.gcp.signalpath.com
+gcp.qa.signalpath.com
+view.projectbaseline.com
+prod-kp-viewpoint-api.gcp.signalpath.com
+dev-unstable-crosscloud.gcp.signalpath.com
+www.clientdev.signalpath.com
+stage-kp-viewpoint-api.gcp.signalpath.com
+clientuat.signalpath.com
+status.signalpath.com
+viewpoint-api.signalpath.com
+www.projectbaseline.com
+test-crosscloud.gcp.signalpath.com
+auth-nonprod.projectbaseline.com
+jenkins.gcp.signalpath.com
+signalpath.com
+test-automation-crosscloud.gcp.signalpath.com
+stage-kp.gcp.signalpath.com
+smetrics.projectbaseline.com
+kp.signalpath.com
+granularinsurance.com
+exp.signalpath.com
+test-automation.gcp.signalpath.com
+staging2.granularinsurance.com
+cloud.projectbaseline.com
+dev-stable-crosscloud.gcp.signalpath.com
+projectbaseline.com
+Wildcard Subdomains found:
+*.g.signalpath.com
+*.projectbaseline.com
+*.signalpath.com
+Fetching subdomains for %25.g.signalpath.com...
+Fetching subdomains for %25.projectbaseline.com...
+Fetching subdomains for %25.signalpath.com...
