@@ -1,0 +1,22 @@
+Fetching subdomains for thirddoormedia.com...
+Fetching subdomains for martech.org...
+Fetching subdomains for digitalmarketingdepot.com...
+Error: Received a non-OK response for digitalmarketingdepot.com. Status Code: 503
+Subdomains found:
+dev.martech.org
+thirddoormedia.com
+mktgsvcs.thirddoormedia.com
+info.martech.org
+subscriptions.thirddoormedia.com
+wpengine.martech.org
+downloads.martech.org
+www.thirddoormedia.com
+info.thirddoormedia.com
+events.martech.org
+www.martech.org
+martech.org
+Wildcard Subdomains found:
+*.martech.org
+*.thirddoormedia.com
+Fetching subdomains for %25.martech.org...
+Fetching subdomains for %25.thirddoormedia.com...
