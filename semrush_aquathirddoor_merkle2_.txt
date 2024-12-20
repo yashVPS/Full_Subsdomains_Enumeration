@@ -1,0 +1,15 @@
+*.thirddoormedia.com
+info.thirddoormedia.com
+subscriptions.thirddoormedia.com
+mktgsvcs.thirddoormedia.com
+www.thirddoormedia.com
+dev.martech.org
+events.martech.org
+*.martech.org
+wpengine.martech.org
+downloads.martech.org
+info.martech.org
+www.martech.org
+*.digitalmarketingdepot.com
+downloads.digitalmarketingdepot.com
+www.digitalmarketingdepot.com
