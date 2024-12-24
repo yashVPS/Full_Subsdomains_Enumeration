@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for semrush_restauqa company
+name: Subdomain Recon Workflow for grammarly_company company
 
 on: [push]
 
@@ -24,89 +24,89 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "ryte.com\nbrand24.com\ntrafficthinktank.com\nkompyte.com\nbacklinko.com\nprowly.com" > semrush_restauqa_scope2_.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL semrush_restauqa_scope2_.txt -recursive -o semrush_restauqa_subs2_.txt
-          wc -l semrush_restauqa_subs2_.txt
-          git add semrush_restauqa_subs2_.txt
-          git commit -m 'Add Subfinder results for semrush_restauqa company'
+          echo -e "grammarly.com\ngrammarlyaws.com" > grammarly_company_scope2_.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL grammarly_company_scope2_.txt -recursive -o grammarly_company_subs2_.txt
+          wc -l grammarly_company_subs2_.txt
+          git add grammarly_company_subs2_.txt
+          git commit -m 'Add Subfinder results for grammarly_company company'
           git push
 
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "ryte.com,brand24.com,trafficthinktank.com,kompyte.com,backlinko.com,prowly.com" -r -w >> semrush_restauqa_crtsh_domains2_.txt
-          wc -l semrush_restauqa_crtsh_domains2_.txt
-          git add semrush_restauqa_crtsh_domains2_.txt
-          git commit -m 'Add crtsh.py results for semrush_restauqa company'
+          python3 ./crtsh.py -d "grammarly.com,grammarlyaws.com" -r -w >> grammarly_company_crtsh_domains2_.txt
+          wc -l grammarly_company_crtsh_domains2_.txt
+          git add grammarly_company_crtsh_domains2_.txt
+          git commit -m 'Add crtsh.py results for grammarly_company company'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u semrush_restauqa_subs2_.txt semrush_restauqa_crtsh_domains2_.txt > semrush_restauqa_final12_.txt
-          wc -l semrush_restauqa_final12_.txt
-          git add semrush_restauqa_final12_.txt
-          git commit -m 'Combine Subfinder and crtsh results for semrush_restauqa company'
+          sort -u grammarly_company_subs2_.txt grammarly_company_crtsh_domains2_.txt > grammarly_company_final12_.txt
+          wc -l grammarly_company_final12_.txt
+          git add grammarly_company_final12_.txt
+          git commit -m 'Combine Subfinder and crtsh results for grammarly_company company'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a semrush_restauqa_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
-          xargs -a semrush_restauqa_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
-          xargs -a semrush_restauqa_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
+          xargs -a grammarly_company_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
+          xargs -a grammarly_company_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
+          xargs -a grammarly_company_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "ryte.com,brand24.com,trafficthinktank.com,kompyte.com,backlinko.com,prowly.com" semrush_restauqa_alienvault2_.txt
-          python3 ./merklemap2subscan.py -d ryte.com,brand24.com,trafficthinktank.com,kompyte.com,backlinko.com,prowly.com -o semrush_restauqa_merkle2_.txt
+          ./alienvault_hostnamefetcher.sh "grammarly.com,grammarlyaws.com" grammarly_company_alienvault2_.txt
+          python3 ./merklemap2subscan.py -d grammarly.com,grammarlyaws.com -o grammarly_company_merkle2_.txt
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter2_.txt hackertarget2_.txt semrush_restauqa_alienvault2_.txt jldc2_.txt semrush_restauqa_merkle2_.txt > semrush_restauqa_combined_domains2_.txt
-          wc -l semrush_restauqa_combined_domains2_.txt
-          git add semrush_restauqa_combined_domains2_.txt semrush_restauqa_merkle2_.txt
-          git commit -m 'Combine additional source results for semrush_restauqa company'
+          sort -u subcenter2_.txt hackertarget2_.txt grammarly_company_alienvault2_.txt jldc2_.txt grammarly_company_merkle2_.txt > grammarly_company_combined_domains2_.txt
+          wc -l grammarly_company_combined_domains2_.txt
+          git add grammarly_company_combined_domains2_.txt grammarly_company_merkle2_.txt
+          git commit -m 'Combine additional source results for grammarly_company company'
           git push
 
       - name: Download Amazon Domains
-        run: curl -o amazon_domains.semrush_restauqa2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni2_.txt
+        run: curl -o amazon_domains.grammarly_company2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni2_.txt
 
       - name: Download Oracle Domains
-        run: curl -o oracle_domains.semrush_restauqa2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni2_.txt
+        run: curl -o oracle_domains.grammarly_company2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni2_.txt
 
       - name: Download DigitalOcean Domains
-        run: curl -o digitalocean_domains.semrush_restauqa2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni2_.txt
+        run: curl -o digitalocean_domains.grammarly_company2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni2_.txt
 
       - name: Download Google Domains
-        run: curl -o google_domains.semrush_restauqa2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni2_.txt
+        run: curl -o google_domains.grammarly_company2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni2_.txt
 
       - name: Download Microsoft Domains
-        run: curl -o microsoft_domains.semrush_restauqa2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni2_.txt
+        run: curl -o microsoft_domains.grammarly_company2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni2_.txt
 
       - name: Concatenate All Domains
-        run: cat amazon_domains.semrush_restauqa2_.txt oracle_domains.semrush_restauqa2_.txt digitalocean_domains.semrush_restauqa2_.txt google_domains.semrush_restauqa2_.txt microsoft_domains.semrush_restauqa2_.txt > all_domains.semrush_restauqa2_.txt
+        run: cat amazon_domains.grammarly_company2_.txt oracle_domains.grammarly_company2_.txt digitalocean_domains.grammarly_company2_.txt google_domains.grammarly_company2_.txt microsoft_domains.grammarly_company2_.txt > all_domains.grammarly_company2_.txt
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(ryte\.com|brand24\.com|trafficthinktank\.com|kompyte\.com|backlinko\.com|prowly\.com)\b' all_domains.semrush_restauqa2_.txt | tr ' ' '\n' | sort -u > semrush_restauqa_cloud_domains2_.txt
-          wc -l semrush_restauqa_cloud_domains2_.txt
+          grep -Eo '\b(\S+\.)?(grammarly\.com|grammarlyaws\.com)\b' all_domains.grammarly_company2_.txt | tr ' ' '\n' | sort -u > grammarly_company_cloud_domains2_.txt
+          wc -l grammarly_company_cloud_domains2_.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add semrush_restauqa_cloud_domains2_.txt
-          git commit -m "Add processed semrush_restauqa company domains"
+          git add grammarly_company_cloud_domains2_.txt
+          git commit -m "Add processed grammarly_company company domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u semrush_restauqa_final12_.txt semrush_restauqa_combined_domains2_.txt semrush_restauqa_cloud_domains2_.txt > semrush_restauqa_final_results2_.txt
-          wc -l semrush_restauqa_final_results2_.txt
-          git add semrush_restauqa_final_results2_.txt
-          git commit -m 'Combine all results for semrush_restauqa company'
+          sort -u grammarly_company_final12_.txt grammarly_company_combined_domains2_.txt grammarly_company_cloud_domains2_.txt > grammarly_company_final_results2_.txt
+          wc -l grammarly_company_final_results2_.txt
+          git add grammarly_company_final_results2_.txt
+          git commit -m 'Combine all results for grammarly_company company'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' semrush_restauqa_final_results2_.txt > semrush_restauqa_final_results_cleaned.txt
-          wc -l semrush_restauqa_final_results_cleaned.txt
-          git add semrush_restauqa_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' grammarly_company_final_results2_.txt > grammarly_company_final_results_cleaned.txt
+          wc -l grammarly_company_final_results_cleaned.txt
+          git add grammarly_company_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
