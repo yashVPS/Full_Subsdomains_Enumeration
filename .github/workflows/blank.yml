@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for browserstack company
+name: Subdomain Recon Workflow for snowflake company
 
 on: [push]
 
@@ -13,90 +13,90 @@ jobs:
         run: |
           git config --global user.name "ASEEMYASH007"
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
-      # - name: Download Subfinder
-      #   run: |
-      #     mkdir -p /home/runner/configz/subfinder
-      #     cp provider-config.yaml /home/runner/configz/subfinder
-      #     wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
-      #     unzip subfinder_2.6.7_linux_amd64.zip
-      #     sudo chmod +x subfinder
-      # - name: Run Subfinder
-      #   run: |
-      #     echo -e "browserstack.com\npercy.io" > browserstack_scope2_.txt
-      #     ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL browserstack_scope2_.txt -recursive -o browserstack_subs2_.txt
-      #     wc -l browserstack_subs2_.txt
-      #     git add browserstack_subs2_.txt
-      #     git commit -m 'Add Subfinder results for browserstack company'
-      #     git push
-      # - name: Run crtsh.py
-      #   run: |
-      #     python3 ./crtsh.py -d "browserstack.com,percy.io" -r -w >> browserstack_crtsh_domains2_.txt
-      #     wc -l browserstack_crtsh_domains2_.txt
-      #     git add browserstack_crtsh_domains2_.txt
-      #     git commit -m 'Add crtsh.py results for browserstack company'
-      #     git push
-      # - name: Combine Subfinder and crtsh results
-      #   run: |
-      #     sort -u browserstack_subs2_.txt browserstack_crtsh_domains2_.txt > browserstack_final12_.txt
-      #     wc -l browserstack_final12_.txt
-      #     git add browserstack_final12_.txt
-      #     git commit -m 'Combine Subfinder and crtsh results for browserstack company'
-      #     git push
-      # - name: Fetch Additional Sources
-      #   run: |
-      #     xargs -a browserstack_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
-      #     xargs -a browserstack_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
-      #     xargs -a browserstack_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
-      #     sudo chmod +x *
-      #     ./alienvault_hostnamefetcher.sh "browserstack.com,percy.io" browserstack_alienvault2_.txt
-      #     python3 ./merklemap2subscan.py -d browserstack.com,percy.io -o browserstack_merkle2_.txt
-      # - name: Combine Additional Source Results
-      #   run: |
-      #     sort -u subcenter2_.txt hackertarget2_.txt browserstack_alienvault2_.txt jldc2_.txt browserstack_merkle2_.txt > browserstack_combined_domains2_.txt
-      #     wc -l browserstack_combined_domains2_.txt
-      #     git add browserstack_combined_domains2_.txt browserstack_merkle2_.txt
-      #     git commit -m 'Combine additional source results for browserstack company'
-      #     git push
+      - name: Download Subfinder
+        run: |
+          mkdir -p /home/runner/configz/subfinder
+          cp provider-config.yaml /home/runner/configz/subfinder
+          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
+          unzip subfinder_2.6.7_linux_amd64.zip
+          sudo chmod +x subfinder
+      - name: Run Subfinder
+        run: |
+          echo -e "snowflake.com\nsnowflakecomputing.com" > snowflake_scope2_.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL snowflake_scope2_.txt -recursive -o snowflake_subs2_.txt
+          wc -l snowflake_subs2_.txt
+          git add snowflake_subs2_.txt
+          git commit -m 'Add Subfinder results for snowflake company'
+          git push
+      - name: Run crtsh.py
+        run: |
+          python3 ./crtsh.py -d "snowflake.com,snowflakecomputing.com" -r -w >> snowflake_crtsh_domains2_.txt
+          wc -l snowflake_crtsh_domains2_.txt
+          git add snowflake_crtsh_domains2_.txt
+          git commit -m 'Add crtsh.py results for snowflake company'
+          git push
+      - name: Combine Subfinder and crtsh results
+        run: |
+          sort -u snowflake_subs2_.txt snowflake_crtsh_domains2_.txt > snowflake_final12_.txt
+          wc -l snowflake_final12_.txt
+          git add snowflake_final12_.txt
+          git commit -m 'Combine Subfinder and crtsh results for snowflake company'
+          git push
+      - name: Fetch Additional Sources
+        run: |
+          xargs -a snowflake_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
+          xargs -a snowflake_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
+          xargs -a snowflake_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
+          sudo chmod +x *
+          ./alienvault_hostnamefetcher.sh "snowflake.com,snowflakecomputing.com" snowflake_alienvault2_.txt
+          python3 ./merklemap2subscan.py -d snowflake.com,snowflakecomputing.com -o snowflake_merkle2_.txt
+      - name: Combine Additional Source Results
+        run: |
+          sort -u subcenter2_.txt hackertarget2_.txt snowflake_alienvault2_.txt jldc2_.txt snowflake_merkle2_.txt > snowflake_combined_domains2_.txt
+          wc -l snowflake_combined_domains2_.txt
+          git add snowflake_combined_domains2_.txt snowflake_merkle2_.txt
+          git commit -m 'Combine additional source results for snowflake company'
+          git push
       - name: Download Amazon Domains
-        run: curl -o amazon_domains.browserstack2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+        run: curl -o amazon_domains.snowflake2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
 
       - name: Download Oracle Domains
-        run: curl -o oracle_domains.browserstack2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+        run: curl -o oracle_domains.snowflake2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
 
       - name: Download DigitalOcean Domains
-        run: curl -o digitalocean_domains.browserstack2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+        run: curl -o digitalocean_domains.snowflake2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
 
       - name: Download Google Domains
-        run: curl -o google_domains.browserstack2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+        run: curl -o google_domains.snowflake2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
 
       - name: Download Microsoft Domains
-        run: curl -o microsoft_domains.browserstack2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+        run: curl -o microsoft_domains.snowflake2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
 
       - name: Concatenate All Domains
-        run: cat amazon_domains.browserstack2_.txt oracle_domains.browserstack2_.txt digitalocean_domains.browserstack2_.txt google_domains.browserstack2_.txt microsoft_domains.browserstack2_.txt > all_domains.browserstack2_.txt
+        run: cat amazon_domains.snowflake2_.txt oracle_domains.snowflake2_.txt digitalocean_domains.snowflake2_.txt google_domains.snowflake2_.txt microsoft_domains.snowflake2_.txt > all_domains.snowflake2_.txt
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(browserstack\.com|percy\.io)\b' all_domains.browserstack2_.txt | tr ' ' '\n' | sort -u > browserstack_cloud_domains3_.txt
-          wc -l browserstack_cloud_domains3_.txt
+          grep -Eo '\b(\S+\.)?(snowflake\.com|snowflakecomputing\.com)\b' all_domains.snowflake2_.txt | tr ' ' '\n' | sort -u > snowflake_cloud_domains3_.txt
+          wc -l snowflake_cloud_domains3_.txt
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add browserstack_cloud_domains3_.txt
-          git commit -m "Add processed browserstack company domains"
+          git add snowflake_cloud_domains3_.txt
+          git commit -m "Add processed snowflake company domains"
           git push
       - name: Combine All Results
         run: |
-          sort -u browserstack_final12_.txt browserstack_combined_domains2_.txt browserstack_cloud_domains3_.txt > browserstack_final_results3_.txt
-          wc -l browserstack_final_results2_.txt
-          git add browserstack_final_results2_.txt
-          git commit -m 'Combine all results for browserstack company'
+          sort -u snowflake_final12_.txt snowflake_combined_domains2_.txt snowflake_cloud_domains3_.txt > snowflake_final_results3_.txt
+          wc -l snowflake_final_results2_.txt
+          git add snowflake_final_results2_.txt
+          git commit -m 'Combine all results for snowflake company'
           git push
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' browserstack_final_results3_.txt > browserstack_final_results_cleaned3.txt
-          wc -l browserstack_final_results_cleaned.txt
-          git add browserstack_final_results_cleaned.txt
+          sed 's/^\*\.\(.*\)$/\1/' snowflake_final_results3_.txt > snowflake_final_results_cleaned3.txt
+          wc -l snowflake_final_results_cleaned.txt
+          git add snowflake_final_results_cleaned.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
