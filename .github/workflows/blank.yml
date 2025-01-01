@@ -30,7 +30,11 @@ jobs:
           git push
       - name: Run crtsh.py
         run: |
-          python3 ./crtsh.py -d "snowflake.com,snowflakecomputing.com" -r -w >> snowflake_crtsh_domains2_.txt
+          sudo chmod +x *
+          ./crt_v2.sh -d snowflake.com -o snowflake_crtsh_domains0_.txt
+          ./crt_v2.sh -d snowflakecomputing.com -o snowflake_crtsh_domains1_.txt
+          sort -u snowflake_crtsh_domains0_.txt snowflake_crtsh_domains1_.txt > snowflake_crtsh_domains2_.txt
+          #python3 ./crtsh.py -d "snowflake.com,snowflakecomputing.com" -r -w >> snowflake_crtsh_domains2_.txt
           wc -l snowflake_crtsh_domains2_.txt
           git add snowflake_crtsh_domains2_.txt
           git commit -m 'Add crtsh.py results for snowflake company'
