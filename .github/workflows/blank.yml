@@ -90,17 +90,17 @@ jobs:
     #       git add snowflake_cloud_domains3_.txt
     #       git commit -m "Add processed snowflake company domains"
     #       git push
-      - name: Combine All Results
-        run: |
-          sort -u snowflake_final12_.txt snowflake_combined_domains2_.txt snowflake_cloud_domains3_.txt > snowflake_final_results3_.txt
-          wc -l snowflake_final_results3_.txt
-          git add snowflake_final_results3_.txt
-          git commit -m 'Combine all results for snowflake company'
-          git push
+    #   - name: Combine All Results
+    #     run: |
+    #       sort -u snowflake_final12_.txt snowflake_combined_domains2_.txt snowflake_cloud_domains3_.txt > snowflake_final_results3_.txt
+    #       wc -l snowflake_final_results3_.txt
+    #       git add snowflake_final_results3_.txt
+    #       git commit -m 'Combine all results for snowflake company'
+    #       git push
       - name: Clean Wildcard Domains
         run: |
           sed 's/^\*\.\(.*\)$/\1/' snowflake_final_results3_.txt > snowflake_final_results_cleaned3.txt
-          wc -l snowflake_final_results_cleaned.txt
-          git add snowflake_final_results_cleaned.txt
+          wc -l snowflake_final_results_cleaned3.txt
+          git add snowflake_final_results_cleaned3.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
