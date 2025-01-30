@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for codagrammarly Company
+name: Subdomain Recon Workflow for benchsci Company
 
 on: [push]
 
@@ -24,88 +24,88 @@ jobs:
 
       - name: Run Subfinder
         run: |
-          echo -e "coda.io" > codagrammarly_scope2_.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL codagrammarly_scope2_.txt -recursive -o codagrammarly_subs2_.txt
-          wc -l codagrammarly_subs2_.txt
-          git add codagrammarly_subs2_.txt
-          git commit -m 'Add Subfinder results for codagrammarly company'
+          echo -e "benchsci.com\nbenchsci.dev" > benchsci_scope2_.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL benchsci_scope2_.txt -recursive -o benchsci_subs2_.txt
+          wc -l benchsci_subs2_.txt
+          git add benchsci_subs2_.txt
+          git commit -m 'Add Subfinder results for benchsci company'
           git push
 
       - name: Run crtsh.py
         run: |
           sudo chmod +x *
-          ./crt_v2.sh -d coda.io | tee -a codagrammarly_crtsh_domains2_.txt
-          wc -l codagrammarly_crtsh_domains2_.txt
-          git add codagrammarly_crtsh_domains2_.txt
-          git commit -m 'Add crtsh.py results for codagrammarly company'
+          ./crt_v2.sh -d coda.io | tee -a benchsci_crtsh_domains2_.txt
+          wc -l benchsci_crtsh_domains2_.txt
+          git add benchsci_crtsh_domains2_.txt
+          git commit -m 'Add crtsh.py results for benchsci company'
           git push
 
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u codagrammarly_subs2_.txt codagrammarly_crtsh_domains2_.txt > codagrammarly_final12_.txt
-          wc -l codagrammarly_final12_.txt
-          git add codagrammarly_final12_.txt
-          git commit -m 'Combine Subfinder and crtsh results for codagrammarly company'
+          sort -u benchsci_subs2_.txt benchsci_crtsh_domains2_.txt > benchsci_final12_.txt
+          wc -l benchsci_final12_.txt
+          git add benchsci_final12_.txt
+          git commit -m 'Combine Subfinder and crtsh results for benchsci company'
           git push
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a codagrammarly_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
-          xargs -a codagrammarly_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
-          xargs -a codagrammarly_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
+          xargs -a benchsci_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
+          xargs -a benchsci_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
+          xargs -a benchsci_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "coda.io" codagrammarly_alienvault2_.txt
-          python3 ./merklemap2subscan.py -d coda.io -o codagrammarly_merkle2_.txt
+          ./alienvault_hostnamefetcher.sh "coda.io" benchsci_alienvault2_.txt
+          python3 ./merklemap2subscan.py -d coda.io -o benchsci_merkle2_.txt
           while read -r domain; do 
             curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain&size=10000" | jq -r '.results[].task.domain'; 
             sleep 15; 
-          done < codagrammarly_scope2_.txt | sort -u > urlscan_codagrammarly_domains.txt
+          done < benchsci_scope2_.txt | sort -u > urlscan_benchsci_domains.txt
 
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter2_.txt hackertarget2_.txt codagrammarly_alienvault2_.txt jldc2_.txt codagrammarly_merkle2_.txt urlscan_codagrammarly_domains.txt > codagrammarly_combined_domains2_.txt
-          wc -l codagrammarly_combined_domains2_.txt
-          git add codagrammarly_combined_domains2_.txt codagrammarly_merkle2_.txt urlscan_codagrammarly_domains.txt
-          git commit -m 'Combine additional source results for codagrammarly company'
+          sort -u subcenter2_.txt hackertarget2_.txt benchsci_alienvault2_.txt jldc2_.txt benchsci_merkle2_.txt urlscan_benchsci_domains.txt > benchsci_combined_domains2_.txt
+          wc -l benchsci_combined_domains2_.txt
+          git add benchsci_combined_domains2_.txt benchsci_merkle2_.txt urlscan_benchsci_domains.txt
+          git commit -m 'Combine additional source results for benchsci company'
           git push
 
       - name: Download Cloud Provider Domains
         run: |
-          curl -o amazon_domains.codagrammarly2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
-          curl -o oracle_domains.codagrammarly2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
-          curl -o digitalocean_domains.codagrammarly2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
-          curl -o google_domains.codagrammarly2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
-          curl -o microsoft_domains.codagrammarly2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+          curl -o amazon_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+          curl -o oracle_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+          curl -o digitalocean_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+          curl -o google_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+          curl -o microsoft_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
 
       - name: Concatenate All Domains
         run: |
-          cat amazon_domains.codagrammarly2_.txt oracle_domains.codagrammarly2_.txt digitalocean_domains.codagrammarly2_.txt google_domains.codagrammarly2_.txt microsoft_domains.codagrammarly2_.txt > all_domains.codagrammarly2_.txt
+          cat amazon_domains.benchsci2_.txt oracle_domains.benchsci2_.txt digitalocean_domains.benchsci2_.txt google_domains.benchsci2_.txt microsoft_domains.benchsci2_.txt > all_domains.benchsci2_.txt
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(coda\.io)\b' all_domains.codagrammarly2_.txt | tr ' ' '\n' | sort -u > codagrammarly_cloud_domains3_.txt
-          wc -l codagrammarly_cloud_domains3_.txt
+          grep -Eo '\b(\S+\.)?(benchsci\.com|benchsci\.dev)\b' all_domains.benchsci2_.txt | tr ' ' '\n' | sort -u > benchsci_cloud_domains3_.txt
+          wc -l benchsci_cloud_domains3_.txt
 
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add codagrammarly_cloud_domains3_.txt
-          git commit -m "Add processed codagrammarly company domains"
+          git add benchsci_cloud_domains3_.txt
+          git commit -m "Add processed benchsci company domains"
           git push
 
       - name: Combine All Results
         run: |
-          sort -u codagrammarly_final12_.txt codagrammarly_combined_domains2_.txt codagrammarly_cloud_domains3_.txt > codagrammarly_final_results3_.txt
-          wc -l codagrammarly_final_results3_.txt
-          git add codagrammarly_final_results3_.txt
-          git commit -m 'Combine all results for codagrammarly company'
+          sort -u benchsci_final12_.txt benchsci_combined_domains2_.txt benchsci_cloud_domains3_.txt > benchsci_final_results3_.txt
+          wc -l benchsci_final_results3_.txt
+          git add benchsci_final_results3_.txt
+          git commit -m 'Combine all results for benchsci company'
           git push
 
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' codagrammarly_final_results3_.txt > codagrammarly_final_results_cleaned3.txt
-          wc -l codagrammarly_final_results_cleaned3.txt
-          git add codagrammarly_final_results_cleaned3.txt
+          sed 's/^\*\.\(.*\)$/\1/' benchsci_final_results3_.txt > benchsci_final_results_cleaned3.txt
+          wc -l benchsci_final_results_cleaned3.txt
+          git add benchsci_final_results_cleaned3.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
