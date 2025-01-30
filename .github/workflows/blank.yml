@@ -34,7 +34,7 @@ jobs:
       - name: Run crtsh.py
         run: |
           sudo chmod +x *
-          ./crt_v2.sh -d coda.io | tee -a benchsci_crtsh_domains2_.txt
+          ./crt_v2.sh -d benchsci.com,benchsci.dev | tee -a benchsci_crtsh_domains2_.txt
           wc -l benchsci_crtsh_domains2_.txt
           git add benchsci_crtsh_domains2_.txt
           git commit -m 'Add crtsh.py results for benchsci company'
@@ -54,8 +54,8 @@ jobs:
           xargs -a benchsci_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
           xargs -a benchsci_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "coda.io" benchsci_alienvault2_.txt
-          python3 ./merklemap2subscan.py -d coda.io -o benchsci_merkle2_.txt
+          ./alienvault_hostnamefetcher.sh "benchsci.com,benchsci.dev" benchsci_alienvault2_.txt
+          python3 ./merklemap2subscan.py -d benchsci.com,benchsci.dev -o benchsci_merkle2_.txt
           while read -r domain; do 
             curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain&size=10000" | jq -r '.results[].task.domain'; 
             sleep 15; 
