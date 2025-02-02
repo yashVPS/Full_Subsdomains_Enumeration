@@ -30,14 +30,10 @@ def get_parquet_urls():
     
     return sorted(parquet_urls, reverse=True)
 
-def download_parquet(url, download_folder="downloads"):
-    # Ensure the download folder exists
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
-    
-    # Extract the file name from the URL
+def download_parquet(url):
+    # Extract the file name from the URL and save it in the current directory
     file_name = url.split("/")[-1]
-    file_path = os.path.join(download_folder, file_name)
+    file_path = os.path.join(os.getcwd(), file_name)
     
     # Download the file and save it locally
     response = requests.get(url, stream=True)
