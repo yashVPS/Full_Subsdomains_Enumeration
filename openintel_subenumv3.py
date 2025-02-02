@@ -1,5 +1,6 @@
 import requests
 import duckdb
+import os
 import io
 import argparse
 import re
@@ -29,24 +30,33 @@ def get_parquet_urls():
     
     return sorted(parquet_urls, reverse=True)
 
-def download_parquet(url):
+def download_parquet(url, download_folder="downloads"):
+    # Ensure the download folder exists
+    if not os.path.exists(download_folder):
+        os.makedirs(download_folder)
+    
+    # Extract the file name from the URL
+    file_name = url.split("/")[-1]
+    file_path = os.path.join(download_folder, file_name)
+    
+    # Download the file and save it locally
     response = requests.get(url, stream=True)
     total_size = int(response.headers.get('Content-Length', 0))
-    file_data = io.BytesIO()
     
-    with tqdm(total=total_size, unit='B', unit_scale=True, desc="Downloading Parquet") as pbar:
-        for chunk in response.iter_content(chunk_size=8192):
-            file_data.write(chunk)
-            pbar.update(len(chunk))
+    with open(file_path, 'wb') as f:
+        with tqdm(total=total_size, unit='B', unit_scale=True, desc="Downloading Parquet") as pbar:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+                pbar.update(len(chunk))
     
-    file_data.seek(0)
-    return file_data
+    print(f"Downloaded Parquet file saved to: {file_path}")
+    return file_path
 
-def query_parquet(file_data, domains):
+def query_parquet(file_path, domains):
     domain_filters = " OR ".join([f"query_name LIKE '%{domain}'" for domain in domains])
     query = f"""
     SELECT DISTINCT(query_name)
-    FROM read_parquet(file_data)
+    FROM read_parquet('{file_path}')
     WHERE {domain_filters};
     """
     
@@ -72,12 +82,15 @@ def main():
         parquet_url = parquet_urls[0]
         print(f"Using latest Parquet file: {parquet_url}")
     
-    parquet_data = download_parquet(parquet_url)
-    subdomains = query_parquet(parquet_data, domains)
+    # Download the Parquet file locally
+    parquet_file = download_parquet(parquet_url)
+    
+    # Query the downloaded Parquet file
+    subdomains = query_parquet(parquet_file, domains)
     
     print("\nExtracted Subdomains:")
     for sub in subdomains:
         print(sub)
-    
+
 if __name__ == "__main__":
     main()
