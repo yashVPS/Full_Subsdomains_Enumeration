@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for BenchSci Company
+name: Subdomain Recon Workflow for stripchat Company
 
 on: [push]
 
@@ -75,11 +75,11 @@ jobs:
 
       - name: Final Merge & Cleanup
         run: |
-          sort -u combined_results.txt additional_sources.txt merged_additional.txt stripchat_cloud_domains_.txt > final_results.txt
-          sed 's/^\*\.\(.*\)$/\1/' final_results.txt > cleaned_results.txt
+          sort -u combined_results.txt additional_sources.txt merged_additional.txt stripchat_cloud_domains_.txt > stripchat_final_results.txt
+          sed 's/^\*\.\(.*\)$/\1/' stripchat_final_results.txt > stripchat_cleaned_results.txt
 
       - name: Commit & Push Results
         run: |
-          git add final_results.txt cleaned_results.txt
-          git commit -m "Updated subdomain recon results for BenchSci"
+          git add stripchat_final_results.txt stripchat_cleaned_results.txt
+          git commit -m "Updated subdomain recon results for stripchat"
           git push
