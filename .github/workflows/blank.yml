@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for benchsci Company
+name: Subdomain Recon Workflow for BenchSci Company
 
 on: [push]
 
@@ -7,105 +7,79 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Install Git and configure user
+      - name: Set up Git
         run: |
           git config --global user.name "ASEEMYASH007"
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
 
-      - name: Download Subfinder
+      - name: Install Dependencies
+        run: |
+          sudo apt update && sudo apt install -y curl unzip jq
+          pip install requests duckdb tqdm
+
+      - name: Download & Setup Subfinder
         run: |
           mkdir -p /home/runner/configz/subfinder
           cp provider-config.yaml /home/runner/configz/subfinder
-          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
-          unzip subfinder_2.6.7_linux_amd64.zip
-          sudo chmod +x subfinder
+          wget -qO subfinder.zip https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
+          unzip subfinder.zip && chmod +x subfinder
+          echo -e "stripchat.com" > stripchat_scope.txt
 
-      - name: Run Subfinder
+      - name: Run Subfinder & crtsh
         run: |
-          echo -e "benchsci.com\nbenchsci.dev" > benchsci_scope2_.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL benchsci_scope2_.txt -recursive -o benchsci_subs2_.txt
-          wc -l benchsci_subs2_.txt
-          git add benchsci_subs2_.txt
-          git commit -m 'Add Subfinder results for benchsci company'
-          git push
-
-      - name: Run crtsh.py
-        run: |
-          sudo chmod +x *
-          ./crt_v2.sh -d benchsci.com,benchsci.dev | tee -a benchsci_crtsh_domains2_.txt
-          wc -l benchsci_crtsh_domains2_.txt
-          git add benchsci_crtsh_domains2_.txt
-          git commit -m 'Add crtsh.py results for benchsci company'
-          git push
-
-      - name: Combine Subfinder and crtsh results
-        run: |
-          sort -u benchsci_subs2_.txt benchsci_crtsh_domains2_.txt > benchsci_final12_.txt
-          wc -l benchsci_final12_.txt
-          git add benchsci_final12_.txt
-          git commit -m 'Combine Subfinder and crtsh results for benchsci company'
-          git push
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL stripchat_scope.txt -recursive -o subfinder_results.txt
+          sudo chmod +x crt_v2.sh
+          ./crt_v2.sh -d stripchat.com | tee -a crtsh_results.txt
+          sort -u subfinder_results.txt crtsh_results.txt > combined_results.txt
 
       - name: Fetch Additional Sources
         run: |
-          xargs -a benchsci_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
-          xargs -a benchsci_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
-          xargs -a benchsci_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
-          sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "benchsci.com,benchsci.dev" benchsci_alienvault2_.txt
-          python3 ./merklemap2subscan.py -d benchsci.com,benchsci.dev -o benchsci_merkle2_.txt
-          while read -r domain; do 
-            curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain&size=10000" | jq -r '.results[].task.domain'; 
-            sleep 15; 
-          done < benchsci_scope2_.txt | sort -u > urlscan_benchsci_domains.txt
+          for domain in $(cat stripchat_scope.txt); do
+            curl -s "https://jldc.me/anubis/subdomains/$domain" | tr -d '[]"' | tr ',' '\n' >> jldc_results.txt
+            curl -s "https://api.subdomain.center/?domain=$domain" | tr -d '[]"' | tr ',' '\n' >> subcenter_results.txt
+            curl -s "https://api.hackertarget.com/hostsearch/?q=$domain" | cut -d"," -f1 >> hackertarget_results.txt
+          done
+          sort -u jldc_results.txt subcenter_results.txt hackertarget_results.txt > additional_sources.txt
 
-      - name: Combine Additional Source Results
+      - name: Run AlienVault & OpenIntel
         run: |
-          sort -u subcenter2_.txt hackertarget2_.txt benchsci_alienvault2_.txt jldc2_.txt benchsci_merkle2_.txt urlscan_benchsci_domains.txt > benchsci_combined_domains2_.txt
-          wc -l benchsci_combined_domains2_.txt
-          git add benchsci_combined_domains2_.txt benchsci_merkle2_.txt urlscan_benchsci_domains.txt
-          git commit -m 'Combine additional source results for benchsci company'
+          sudo chmod +x alienvault_hostnamefetcher.sh
+          ./alienvault_hostnamefetcher.sh "stripchat.com" alienvault_results.txt
+          python3 merklemap2subscan.py -d stripchat.com -o merklemap_results.txt
+          python3 openintel_subenumv3.py -d stripchat.com -p "https://object.openintel.nl/openintel-public/fdns/basis=toplist/source=umbrella/year=2025/month=02/day=01/part-00000-7901da58-b153-401e-99c0-24ea1fbcc3ed-c000.gz.parquet" | tee stripchat_openintel_results.txt
+          sort -u alienvault_results.txt merklemap_results.txt stripchat_openintel_results.txt > merged_additional.txt
+          git add stripchat_openintel_results.txt
+          git commit -m "openintel save"
           git push
+
 
       - name: Download Cloud Provider Domains
         run: |
-          curl -o amazon_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
-          curl -o oracle_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
-          curl -o digitalocean_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
-          curl -o google_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
-          curl -o microsoft_domains.benchsci2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+          curl -o amazon_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+          curl -o oracle_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+          curl -o digitalocean_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+          curl -o google_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+          curl -o microsoft_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
 
       - name: Concatenate All Domains
         run: |
-          cat amazon_domains.benchsci2_.txt oracle_domains.benchsci2_.txt digitalocean_domains.benchsci2_.txt google_domains.benchsci2_.txt microsoft_domains.benchsci2_.txt > all_domains.benchsci2_.txt
+          cat amazon_domains.stripchat2_.txt oracle_domains.stripchat2_.txt digitalocean_domains.stripchat2_.txt google_domains.stripchat2_.txt microsoft_domains.stripchat2_.txt > all_domains.stripchat2_.txt
 
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(benchsci\.com|benchsci\.dev)\b' all_domains.benchsci2_.txt | tr ' ' '\n' | sort -u > benchsci_cloud_domains3_.txt
-          wc -l benchsci_cloud_domains3_.txt
+          grep -Eo '\b(\S+\.)?(stripchat\.com)\b' all_domains.stripchat2_.txt | tr ' ' '\n' | sort -u > stripchat_cloud_domains_.txt
+          wc -l stripchat_cloud_domains_.txt
 
-      - name: Commit and Push Filtered Domains
+      - name: Final Merge & Cleanup
         run: |
-          git config --global user.email "21btrcc007@jainuniversity.ac.in"
-          git config --global user.name "ASEEMYASH007"
-          git add benchsci_cloud_domains3_.txt
-          git commit -m "Add processed benchsci company domains"
-          git push
+          sort -u combined_results.txt additional_sources.txt merged_additional.txt stripchat_cloud_domains_.txt > final_results.txt
+          sed 's/^\*\.\(.*\)$/\1/' final_results.txt > cleaned_results.txt
 
-      - name: Combine All Results
+      - name: Commit & Push Results
         run: |
-          sort -u benchsci_final12_.txt benchsci_combined_domains2_.txt benchsci_cloud_domains3_.txt > benchsci_final_results3_.txt
-          wc -l benchsci_final_results3_.txt
-          git add benchsci_final_results3_.txt
-          git commit -m 'Combine all results for benchsci company'
-          git push
-
-      - name: Clean Wildcard Domains
-        run: |
-          sed 's/^\*\.\(.*\)$/\1/' benchsci_final_results3_.txt > benchsci_final_results_cleaned3.txt
-          wc -l benchsci_final_results_cleaned3.txt
-          git add benchsci_final_results_cleaned3.txt
-          git commit -m "Cleaned wildcard domains in final results"
+          git add final_results.txt cleaned_results.txt
+          git commit -m "Updated subdomain recon results for BenchSci"
           git push
