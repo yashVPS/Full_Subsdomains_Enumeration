@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for stripchat Company
+name: Subdomain Recon Workflow for workleap Company
 
 on: [push]
 
@@ -7,80 +7,94 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Set up Git
+      - name: Install Git and configure user
         run: |
           git config --global user.name "ASEEMYASH007"
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
-
-      - name: Install Dependencies
+      - name: Download Subfinder
         run: |
-          sudo apt update && sudo apt install -y curl unzip jq
-          pip install requests duckdb tqdm
-
-      # - name: Download & Setup Subfinder
-      #   run: |
-      #     mkdir -p /home/runner/configz/subfinder
-      #     cp provider-config.yaml /home/runner/configz/subfinder
-      #     wget -qO subfinder.zip https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
-      #     unzip subfinder.zip && chmod +x subfinder
-      #     echo -e "stripchat.com" > stripchat_scope.txt
-
-      # - name: Run Subfinder & crtsh
-      #   run: |
-      #     ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL stripchat_scope.txt -recursive -o subfinder_results.txt
-      #     sudo chmod +x crt_v2.sh
-      #     ./crt_v2.sh -d stripchat.com | tee -a crtsh_results.txt
-      #     sort -u subfinder_results.txt crtsh_results.txt > combined_results.txt
-
-      # - name: Fetch Additional Sources
-      #   run: |
-      #     for domain in $(cat stripchat_scope.txt); do
-      #       curl -s "https://jldc.me/anubis/subdomains/$domain" | tr -d '[]"' | tr ',' '\n' >> jldc_results.txt
-      #       curl -s "https://api.subdomain.center/?domain=$domain" | tr -d '[]"' | tr ',' '\n' >> subcenter_results.txt
-      #       curl -s "https://api.hackertarget.com/hostsearch/?q=$domain" | cut -d"," -f1 >> hackertarget_results.txt
-      #     done
-      #     sort -u jldc_results.txt subcenter_results.txt hackertarget_results.txt > additional_sources.txt
-
-      - name: Run AlienVault & OpenIntel
+          mkdir -p /home/runner/configz/subfinder
+          cp provider-config.yaml /home/runner/configz/subfinder
+          wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.7/subfinder_2.6.7_linux_amd64.zip
+          unzip subfinder_2.6.7_linux_amd64.zip
+          sudo chmod +x subfinder
+      - name: Run Subfinder
         run: |
-          sudo chmod +x alienvault_hostnamefetcher.sh
-          # ./alienvault_hostnamefetcher.sh "stripchat.com" alienvault_results.txt
-          # python3 merklemap2subscan.py -d stripchat.com -o merklemap_results.txt
-          python3 openintel_subenumv3.py -d stripchat.com -p "https://object.openintel.nl/openintel-public/fdns/basis=toplist/source=umbrella/year=2025/month=02/day=01/part-00000-7901da58-b153-401e-99c0-24ea1fbcc3ed-c000.gz.parquet" | tee stripchat_openintel_results.txt
-          # sort -u alienvault_results.txt merklemap_results.txt stripchat_openintel_results.txt > merged_additional.txt
-          sort -u stripchat_cleaned_results.txt stripchat_openintel_results.txt > fullfinal_stripchat.txt
-          git add stripchat_openintel_results.txt fullfinal_stripchat.txt
-          git commit -m "openintel save"
+          echo -e "workleap.com\npingboard.com\ndidacte.com" > workleap_scope2_.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL workleap_scope2_.txt -recursive -o workleap_subs2_.txt
+          wc -l workleap_subs2_.txt
+          git add workleap_subs2_.txt
+          git commit -m 'Add Subfinder results for workleap company'
           git push
-
-
-      # - name: Download Cloud Provider Domains
-      #   run: |
-      #     curl -o amazon_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
-      #     curl -o oracle_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
-      #     curl -o digitalocean_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
-      #     curl -o google_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
-      #     curl -o microsoft_domains.stripchat2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
-
-      # - name: Concatenate All Domains
-      #   run: |
-      #     cat amazon_domains.stripchat2_.txt oracle_domains.stripchat2_.txt digitalocean_domains.stripchat2_.txt google_domains.stripchat2_.txt microsoft_domains.stripchat2_.txt > all_domains.stripchat2_.txt
-
-      # - name: Filter for Specific Domains and Subdomains Entries
-      #   run: |
-      #     grep -Eo '\b(\S+\.)?(stripchat\.com)\b' all_domains.stripchat2_.txt | tr ' ' '\n' | sort -u > stripchat_cloud_domains_.txt
-      #     wc -l stripchat_cloud_domains_.txt
-
-      # - name: Final Merge & Cleanup
-      #   run: |
-      #     sort -u combined_results.txt additional_sources.txt merged_additional.txt stripchat_cloud_domains_.txt > stripchat_final_results.txt
-      #     sed 's/^\*\.\(.*\)$/\1/' stripchat_final_results.txt > stripchat_cleaned_results.txt
-
-      # - name: Commit & Push Results
-      #   run: |
-      #     git add stripchat_final_results.txt stripchat_cleaned_results.txt
-      #     git commit -m "Updated subdomain recon results for stripchat"
-      #     git push
+      - name: Run crtsh.py
+        run: |
+          sudo chmod +x *
+          ./crt_v2.sh -d workleap.com,pingboard.com,didacte.com | tee -a workleap_crtsh_domains2_.txt
+          wc -l workleap_crtsh_domains2_.txt
+          git add workleap_crtsh_domains2_.txt
+          git commit -m 'Add crtsh.py results for workleap company'
+          git push
+      - name: Combine Subfinder and crtsh results
+        run: |
+          sort -u workleap_subs2_.txt workleap_crtsh_domains2_.txt > workleap_final12_.txt
+          wc -l workleap_final12_.txt
+          git add workleap_final12_.txt
+          git commit -m 'Combine Subfinder and crtsh results for workleap company'
+          git push
+      - name: Fetch Additional Sources
+        run: |
+          xargs -a workleap_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
+          xargs -a workleap_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
+          xargs -a workleap_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
+          sudo chmod +x *
+          ./alienvault_hostnamefetcher.sh "workleap.com,pingboard.com,didacte.com" workleap_alienvault2_.txt
+          python3 ./merklemap2subscan.py -d workleap.com,pingboard.com,didacte.com -o workleap_merkle2_.txt
+          while read -r domain; do curl -s -H "x-api-key: ptAQ2K9RmZPqaWKqouhVBULdVAT1bROZnNW3E21kfdAbqaDuOM3wrCTOeqn5M03k" "https://api.subbdom.com/v1/search?z=$domain" | jq -r '.[]'; done < workleap_scope2_.txt | tee workleap_subbdom.txt
+          while read -r domain; do 
+            curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain&size=10000" | jq -r '.results[].task.domain'; 
+            sleep 15; 
+          done < workleap_scope2_.txt | sort -u > urlscan_workleap_domains.txt
+      - name: Combine Additional Source Results
+        run: |
+          sort -u subcenter2_.txt hackertarget2_.txt workleap_alienvault2_.txt jldc2_.txt workleap_merkle2_.txt urlscan_workleap_domains.txt workleap_subbdom.txt > workleap_combined_domains2_.txt
+          wc -l workleap_combined_domains2_.txt
+          git add workleap_combined_domains2_.txt workleap_merkle2_.txt urlscan_workleap_domains.txt
+          git commit -m 'Combine additional source results for workleap company'
+          git push
+      - name: Download Cloud Provider Domains
+        run: |
+          curl -o amazon_domains.workleap2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+          curl -o oracle_domains.workleap2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+          curl -o digitalocean_domains.workleap2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+          curl -o google_domains.workleap2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+          curl -o microsoft_domains.workleap2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+      - name: Concatenate All Domains
+        run: |
+          cat amazon_domains.workleap2_.txt oracle_domains.workleap2_.txt digitalocean_domains.workleap2_.txt google_domains.workleap2_.txt microsoft_domains.workleap2_.txt > all_domains.workleap2_.txt
+      - name: Filter for Specific Domains and Subdomains Entries
+        run: |
+          grep -Eo '\b(\S+\.)?(workleap\.com|pingboard\.com|didacte\.com)\b' all_domains.workleap2_.txt | tr ' ' '\n' | sort -u > workleap_cloud_domains3_.txt
+          wc -l workleap_cloud_domains3_.txt
+      - name: Commit and Push Filtered Domains
+        run: |
+          git config --global user.email "21btrcc007@jainuniversity.ac.in"
+          git config --global user.name "ASEEMYASH007"
+          git add workleap_cloud_domains3_.txt
+          git commit -m "Add processed workleap company domains"
+          git push
+      - name: Combine All Results
+        run: |
+          sort -u workleap_final12_.txt workleap_combined_domains2_.txt workleap_cloud_domains3_.txt > workleap_final_results3_.txt
+          wc -l workleap_final_results3_.txt
+          git add workleap_final_results3_.txt
+          git commit -m 'Combine all results for workleap company'
+          git push
+      - name: Clean Wildcard Domains
+        run: |
+          sed 's/^\*\.\(.*\)$/\1/' workleap_final_results3_.txt > workleap_final_results_cleaned3.txt
+          wc -l workleap_final_results_cleaned3.txt
+          git add workleap_final_results_cleaned3.txt
+          git commit -m "Cleaned wildcard domains in final results"
+          git push
