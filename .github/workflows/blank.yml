@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for boeing Company
+name: Subdomain Recon Workflow for talent Company
 
 on: [push]
 
@@ -22,79 +22,79 @@ jobs:
           sudo chmod +x subfinder
       - name: Run Subfinder
         run: |
-          echo -e "boeing.com" > boeing_scope2_.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL boeing_scope2_.txt -recursive -o boeing_subs2_.txt
-          wc -l boeing_subs2_.txt
-          git add boeing_subs2_.txt
-          git commit -m 'Add Subfinder results for boeing company'
+          echo -e "talent.com" > talent_scope2_.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL talent_scope2_.txt -recursive -o talent_subs2_.txt
+          wc -l talent_subs2_.txt
+          git add talent_subs2_.txt
+          git commit -m 'Add Subfinder results for talent company'
           git push
       - name: Run crtsh.py
         run: |
           sudo chmod +x *
-          ./crt_v2.sh -d boeing.com | tee -a boeing_crtsh_domains2_.txt
-          wc -l boeing_crtsh_domains2_.txt
-          git add boeing_crtsh_domains2_.txt
-          git commit -m 'Add crtsh.py results for boeing company'
+          ./crt_v2.sh -d talent.com | tee -a talent_crtsh_domains2_.txt
+          wc -l talent_crtsh_domains2_.txt
+          git add talent_crtsh_domains2_.txt
+          git commit -m 'Add crtsh.py results for talent company'
           git push
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u boeing_subs2_.txt boeing_crtsh_domains2_.txt > boeing_final12_.txt
-          wc -l boeing_final12_.txt
-          git add boeing_final12_.txt
-          git commit -m 'Combine Subfinder and crtsh results for boeing company'
+          sort -u talent_subs2_.txt talent_crtsh_domains2_.txt > talent_final12_.txt
+          wc -l talent_final12_.txt
+          git add talent_final12_.txt
+          git commit -m 'Combine Subfinder and crtsh results for talent company'
           git push
       - name: Fetch Additional Sources
         run: |
-          xargs -a boeing_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
-          xargs -a boeing_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
-          xargs -a boeing_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
+          xargs -a talent_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
+          xargs -a talent_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
+          xargs -a talent_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "boeing.com" boeing_alienvault2_.txt
-          python3 ./merklemap2subscan.py -d boeing.com -o boeing_merkle2_.txt
-          while read -r domain; do curl -s -H "x-api-key: ptAQ2K9RmZPqaWKqouhVBULdVAT1bROZnNW3E21kfdAbqaDuOM3wrCTOeqn5M03k" "https://api.subbdom.com/v1/search?z=$domain" | jq -r '.[]'; done < boeing_scope2_.txt | tee boeing_subbdom.txt
+          ./alienvault_hostnamefetcher.sh "talent.com" talent_alienvault2_.txt
+          python3 ./merklemap2subscan.py -d talent.com -o talent_merkle2_.txt
+          while read -r domain; do curl -s -H "x-api-key: ptAQ2K9RmZPqaWKqouhVBULdVAT1bROZnNW3E21kfdAbqaDuOM3wrCTOeqn5M03k" "https://api.subbdom.com/v1/search?z=$domain" | jq -r '.[]'; done < talent_scope2_.txt | tee talent_subbdom.txt
           while read -r domain; do 
             curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain&size=10000" | jq -r '.results[].task.domain'; 
             sleep 15; 
-          done < boeing_scope2_.txt | sort -u > urlscan_boeing_domains.txt
+          done < talent_scope2_.txt | sort -u > urlscan_talent_domains.txt
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter2_.txt hackertarget2_.txt boeing_alienvault2_.txt jldc2_.txt boeing_merkle2_.txt urlscan_boeing_domains.txt boeing_subbdom.txt > boeing_combined_domains2_.txt
-          wc -l boeing_combined_domains2_.txt
-          git add boeing_combined_domains2_.txt boeing_merkle2_.txt urlscan_boeing_domains.txt
-          git commit -m 'Combine additional source results for boeing company'
+          sort -u subcenter2_.txt hackertarget2_.txt talent_alienvault2_.txt jldc2_.txt talent_merkle2_.txt urlscan_talent_domains.txt talent_subbdom.txt > talent_combined_domains2_.txt
+          wc -l talent_combined_domains2_.txt
+          git add talent_combined_domains2_.txt talent_merkle2_.txt urlscan_talent_domains.txt talent_subbdom.txt
+          git commit -m 'Combine additional source results for talent company'
           git push
       - name: Download Cloud Provider Domains
         run: |
-          curl -o amazon_domains.boeing2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
-          curl -o oracle_domains.boeing2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
-          curl -o digitalocean_domains.boeing2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
-          curl -o google_domains.boeing2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
-          curl -o microsoft_domains.boeing2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+          curl -o amazon_domains.talent2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+          curl -o oracle_domains.talent2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+          curl -o digitalocean_domains.talent2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+          curl -o google_domains.talent2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+          curl -o microsoft_domains.talent2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
       - name: Concatenate All Domains
         run: |
-          cat amazon_domains.boeing2_.txt oracle_domains.boeing2_.txt digitalocean_domains.boeing2_.txt google_domains.boeing2_.txt microsoft_domains.boeing2_.txt > all_domains.boeing2_.txt
+          cat amazon_domains.talent2_.txt oracle_domains.talent2_.txt digitalocean_domains.talent2_.txt google_domains.talent2_.txt microsoft_domains.talent2_.txt > all_domains.talent2_.txt
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(boeing\.com)\b' all_domains.boeing2_.txt | tr ' ' '\n' | sort -u > boeing_cloud_domains3_.txt
-          wc -l boeing_cloud_domains3_.txt
+          grep -Eo '\b(\S+\.)?(talent\.com)\b' all_domains.talent2_.txt | tr ' ' '\n' | sort -u > talent_cloud_domains3_.txt
+          wc -l talent_cloud_domains3_.txt
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add boeing_cloud_domains3_.txt
-          git commit -m "Add processed boeing company domains"
+          git add talent_cloud_domains3_.txt
+          git commit -m "Add processed talent company domains"
           git push
       - name: Combine All Results
         run: |
-          sort -u boeing_final12_.txt boeing_combined_domains2_.txt boeing_cloud_domains3_.txt > boeing_final_results3_.txt
-          wc -l boeing_final_results3_.txt
-          git add boeing_final_results3_.txt
-          git commit -m 'Combine all results for boeing company'
+          sort -u talent_final12_.txt talent_combined_domains2_.txt talent_cloud_domains3_.txt > talent_final_results3_.txt
+          wc -l talent_final_results3_.txt
+          git add talent_final_results3_.txt
+          git commit -m 'Combine all results for talent company'
           git push
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' boeing_final_results3_.txt > boeing_final_results_cleaned3.txt
-          wc -l boeing_final_results_cleaned3.txt
-          git add boeing_final_results_cleaned3.txt
+          sed 's/^\*\.\(.*\)$/\1/' talent_final_results3_.txt > talent_final_results_cleaned3.txt
+          wc -l talent_final_results_cleaned3.txt
+          git add talent_final_results_cleaned3.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
