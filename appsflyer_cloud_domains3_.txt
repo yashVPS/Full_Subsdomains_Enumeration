@@ -1,0 +1,10 @@
+afvpn.appsflyer.com
+appsflyer.com
+artifactory.appsflyer.com
+chef.appsflyer.com
+content.experience.appsflyer.com
+eu1.appsflyer.com
+gitlab.appsflyer.com
+sdk.appsflyer.com
+vault.appsflyer.com
+www.afvpn.appsflyer.com
