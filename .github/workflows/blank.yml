@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for howardcountymd Company
+name: Subdomain Recon Workflow for howardcountymdgov Company
 
 on: [push]
 
