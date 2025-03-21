@@ -1,4 +1,4 @@
-name: Subdomain Recon Workflow for appsflyer Company
+name: Subdomain Recon Workflow for howardcountymd Company
 
 on: [push]
 
@@ -22,79 +22,79 @@ jobs:
           sudo chmod +x subfinder
       - name: Run Subfinder
         run: |
-          echo -e "appsflyer.com" > appsflyer_scope2_.txt
-          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL appsflyer_scope2_.txt -recursive -o appsflyer_subs2_.txt
-          wc -l appsflyer_subs2_.txt
-          git add appsflyer_subs2_.txt
-          git commit -m 'Add Subfinder results for appsflyer company'
+          echo -e "howardcountymd.gov" > howardcountymd_scope2_.txt
+          ./subfinder -pc "/home/runner/configz/subfinder/provider-config.yaml" -all -dL howardcountymd_scope2_.txt -recursive -o howardcountymd_subs2_.txt
+          wc -l howardcountymd_subs2_.txt
+          git add howardcountymd_subs2_.txt
+          git commit -m 'Add Subfinder results for howardcountymd company'
           git push
       - name: Run crtsh.py
         run: |
           sudo chmod +x *
-          ./crt_v2.sh -d appsflyer.com | tee -a appsflyer_crtsh_domains2_.txt
-          wc -l appsflyer_crtsh_domains2_.txt
-          git add appsflyer_crtsh_domains2_.txt
-          git commit -m 'Add crtsh.py results for appsflyer company'
+          ./crt_v2.sh -d howardcountymd.gov | tee -a howardcountymd_crtsh_domains2_.txt
+          wc -l howardcountymd_crtsh_domains2_.txt
+          git add howardcountymd_crtsh_domains2_.txt
+          git commit -m 'Add crtsh.py results for howardcountymd company'
           git push
       - name: Combine Subfinder and crtsh results
         run: |
-          sort -u appsflyer_subs2_.txt appsflyer_crtsh_domains2_.txt > appsflyer_final12_.txt
-          wc -l appsflyer_final12_.txt
-          git add appsflyer_final12_.txt
-          git commit -m 'Combine Subfinder and crtsh results for appsflyer company'
+          sort -u howardcountymd_subs2_.txt howardcountymd_crtsh_domains2_.txt > howardcountymd_final12_.txt
+          wc -l howardcountymd_final12_.txt
+          git add howardcountymd_final12_.txt
+          git commit -m 'Combine Subfinder and crtsh results for howardcountymd company'
           git push
       - name: Fetch Additional Sources
         run: |
-          xargs -a appsflyer_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
-          xargs -a appsflyer_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
-          xargs -a appsflyer_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
+          xargs -a howardcountymd_scope2_.txt -I {} sh -c 'curl -s "https://jldc.me/anubis/subdomains/{}" | tr -d "[]\"" | tr "," "\n" >> jldc2_.txt'
+          xargs -a howardcountymd_scope2_.txt -I {} sh -c 'curl -s "https://api.subdomain.center/?domain={}" | tr -d "[]\"" | tr "," "\n" >> subcenter2_.txt'
+          xargs -a howardcountymd_scope2_.txt -I {} sh -c 'curl -s "https://api.hackertarget.com/hostsearch/?q={}" | cut -d"," -f1 >> hackertarget2_.txt'
           sudo chmod +x *
-          ./alienvault_hostnamefetcher.sh "appsflyer.com" appsflyer_alienvault2_.txt
-          python3 ./merklemap2subscan.py -d appsflyer.com -o appsflyer_merkle2_.txt
-          while read -r domain; do curl -s -H "x-api-key: ptAQ2K9RmZPqaWKqouhVBULdVAT1bROZnNW3E21kfdAbqaDuOM3wrCTOeqn5M03k" "https://api.subbdom.com/v1/search?z=$domain" | jq -r '.[]'; done < appsflyer_scope2_.txt | tee appsflyer_subbdom.txt
+          ./alienvault_hostnamefetcher.sh "howardcountymd.gov" howardcountymd_alienvault2_.txt
+          python3 ./merklemap2subscan.py -d howardcountymd.gov -o howardcountymd_merkle2_.txt
+          while read -r domain; do curl -s -H "x-api-key: ptAQ2K9RmZPqaWKqouhVBULdVAT1bROZnNW3E21kfdAbqaDuOM3wrCTOeqn5M03k" "https://api.subbdom.com/v1/search?z=$domain" | jq -r '.[]'; done < howardcountymd_scope2_.txt | tee howardcountymd_subbdom.txt
           while read -r domain; do 
             curl -s "https://urlscan.io/api/v1/search/?q=domain:$domain&size=10000" | jq -r '.results[].task.domain'; 
             sleep 15; 
-          done < appsflyer_scope2_.txt | sort -u > urlscan_appsflyer_domains.txt
+          done < howardcountymd_scope2_.txt | sort -u > urlscan_howardcountymd_domains.txt
       - name: Combine Additional Source Results
         run: |
-          sort -u subcenter2_.txt hackertarget2_.txt appsflyer_alienvault2_.txt jldc2_.txt appsflyer_merkle2_.txt urlscan_appsflyer_domains.txt appsflyer_subbdom.txt > appsflyer_combined_domains2_.txt
-          wc -l appsflyer_combined_domains2_.txt
-          git add appsflyer_combined_domains2_.txt appsflyer_merkle2_.txt urlscan_appsflyer_domains.txt appsflyer_subbdom.txt
-          git commit -m 'Combine additional source results for appsflyer company'
+          sort -u subcenter2_.txt hackertarget2_.txt howardcountymd_alienvault2_.txt jldc2_.txt howardcountymd_merkle2_.txt urlscan_howardcountymd_domains.txt howardcountymd_subbdom.txt > howardcountymd_combined_domains2_.txt
+          wc -l howardcountymd_combined_domains2_.txt
+          git add howardcountymd_combined_domains2_.txt howardcountymd_merkle2_.txt urlscan_howardcountymd_domains.txt howardcountymd_subbdom.txt
+          git commit -m 'Combine additional source results for howardcountymd company'
           git push
       - name: Download Cloud Provider Domains
         run: |
-          curl -o amazon_domains.appsflyer2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
-          curl -o oracle_domains.appsflyer2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
-          curl -o digitalocean_domains.appsflyer2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
-          curl -o google_domains.appsflyer2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
-          curl -o microsoft_domains.appsflyer2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
+          curl -o amazon_domains.howardcountymd2_.txt https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt
+          curl -o oracle_domains.howardcountymd2_.txt https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt
+          curl -o digitalocean_domains.howardcountymd2_.txt https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt
+          curl -o google_domains.howardcountymd2_.txt https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt
+          curl -o microsoft_domains.howardcountymd2_.txt https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt
       - name: Concatenate All Domains
         run: |
-          cat amazon_domains.appsflyer2_.txt oracle_domains.appsflyer2_.txt digitalocean_domains.appsflyer2_.txt google_domains.appsflyer2_.txt microsoft_domains.appsflyer2_.txt > all_domains.appsflyer2_.txt
+          cat amazon_domains.howardcountymd2_.txt oracle_domains.howardcountymd2_.txt digitalocean_domains.howardcountymd2_.txt google_domains.howardcountymd2_.txt microsoft_domains.howardcountymd2_.txt > all_domains.howardcountymd2_.txt
       - name: Filter for Specific Domains and Subdomains Entries
         run: |
-          grep -Eo '\b(\S+\.)?(appsflyer\.com)\b' all_domains.appsflyer2_.txt | tr ' ' '\n' | sort -u > appsflyer_cloud_domains3_.txt
-          wc -l appsflyer_cloud_domains3_.txt
+          grep -Eo '\b(\S+\.)?(howardcountymd\.com)\b' all_domains.howardcountymd2_.txt | tr ' ' '\n' | sort -u > howardcountymd_cloud_domains3_.txt
+          wc -l howardcountymd_cloud_domains3_.txt
       - name: Commit and Push Filtered Domains
         run: |
           git config --global user.email "21btrcc007@jainuniversity.ac.in"
           git config --global user.name "ASEEMYASH007"
-          git add appsflyer_cloud_domains3_.txt
-          git commit -m "Add processed appsflyer company domains"
+          git add howardcountymd_cloud_domains3_.txt
+          git commit -m "Add processed howardcountymd company domains"
           git push
       - name: Combine All Results
         run: |
-          sort -u appsflyer_final12_.txt appsflyer_combined_domains2_.txt appsflyer_cloud_domains3_.txt > appsflyer_final_results3_.txt
-          wc -l appsflyer_final_results3_.txt
-          git add appsflyer_final_results3_.txt
-          git commit -m 'Combine all results for appsflyer company'
+          sort -u howardcountymd_final12_.txt howardcountymd_combined_domains2_.txt howardcountymd_cloud_domains3_.txt > howardcountymd_final_results3_.txt
+          wc -l howardcountymd_final_results3_.txt
+          git add howardcountymd_final_results3_.txt
+          git commit -m 'Combine all results for howardcountymd company'
           git push
       - name: Clean Wildcard Domains
         run: |
-          sed 's/^\*\.\(.*\)$/\1/' appsflyer_final_results3_.txt > appsflyer_final_results_cleaned3.txt
-          wc -l appsflyer_final_results_cleaned3.txt
-          git add appsflyer_final_results_cleaned3.txt
+          sed 's/^\*\.\(.*\)$/\1/' howardcountymd_final_results3_.txt > howardcountymd_final_results_cleaned3.txt
+          wc -l howardcountymd_final_results_cleaned3.txt
+          git add howardcountymd_final_results_cleaned3.txt
           git commit -m "Cleaned wildcard domains in final results"
           git push
